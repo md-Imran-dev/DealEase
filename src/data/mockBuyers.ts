@@ -28,6 +28,105 @@ export const mockBuyers: BuyerProfile[] = [
     totalDeals: 12,
     lastActive: new Date('2024-01-15'),
     verifiedStatus: true,
+    
+    // Additional questionnaire data
+    investmentPhilosophy: "I believe in backing strong management teams who understand their markets deeply. My approach is to provide capital and strategic guidance while allowing proven operators to execute their vision.",
+    dealSizeSweet: "$500K - $1.5M",
+    operationalInvolvement: 'advisory',
+    riskTolerance: 'moderate',
+    financingPreference: ["Equity", "Convertible Notes", "Revenue-Based Financing"],
+    marketFocus: ["B2B SaaS", "Enterprise Software", "PropTech"],
+    teamSize: 3,
+    
+    // Key stats
+    totalCapitalDeployed: 8500000,
+    averageDealSize: 850000,
+    successfulExits: 4,
+    averageHoldPeriod: 4.2,
+    preferredMultiples: {
+      revenue: 3.5,
+      ebitda: 8.0,
+    },
+    
+    // Contact info
+    phone: "+1-415-555-0123",
+    education: [
+      {
+        institution: "Stanford University",
+        degree: "MBA",
+        field: "Technology Entrepreneurship",
+        year: 2015,
+      },
+      {
+        institution: "UC Berkeley",
+        degree: "BS",
+        field: "Computer Science",
+        year: 2010,
+      },
+    ],
+    
+    // Profile metrics
+    profileCompleteness: 95,
+    responseRate: 88,
+    
+    // Badges and endorsements
+    badges: [
+      {
+        id: "verified-investor",
+        name: "Verified Investor",
+        description: "Identity and investment capacity verified",
+        icon: "🔒",
+        color: "#10B981",
+        earnedDate: new Date('2023-06-15'),
+        category: 'verification',
+      },
+      {
+        id: "fast-closer",
+        name: "Fast Closer",
+        description: "Consistently closes deals within stated timeline",
+        icon: "⚡",
+        color: "#F59E0B",
+        earnedDate: new Date('2023-08-20'),
+        category: 'achievement',
+      },
+      {
+        id: "tech-expert",
+        name: "Tech Expert",
+        description: "Specialized expertise in technology acquisitions",
+        icon: "💻",
+        color: "#3B82F6",
+        earnedDate: new Date('2023-03-10'),
+        category: 'expertise',
+      },
+    ],
+    
+    endorsements: [
+      {
+        id: "end-1",
+        endorserName: "Marcus Johnson",
+        endorserTitle: "CEO",
+        endorserCompany: "DataFlow Systems",
+        relationship: "Portfolio Company CEO",
+        message: "Sarah was an exceptional partner throughout our acquisition process. Her industry knowledge and operational insights helped us navigate challenges and ultimately led to a successful exit.",
+        rating: 5,
+        date: new Date('2023-09-15'),
+        verified: true,
+      },
+      {
+        id: "end-2",
+        endorserName: "Lisa Chen",
+        endorserTitle: "Investment Director",
+        endorserCompany: "West Coast Capital",
+        relationship: "Co-investor",
+        message: "Professional, thorough, and easy to work with. Sarah's due diligence process is comprehensive and her deal execution is flawless.",
+        rating: 5,
+        date: new Date('2023-11-02'),
+        verified: true,
+      },
+    ],
+    
+    certifications: ["Certified Business Analyst", "Series 65 License"],
+    awards: ["Top 40 Under 40 Investors - TechCrunch 2023"],
   },
   {
     id: "buyer-2",
@@ -56,6 +155,94 @@ export const mockBuyers: BuyerProfile[] = [
     totalDeals: 25,
     lastActive: new Date('2024-01-14'),
     verifiedStatus: true,
+    
+    // Additional questionnaire data
+    investmentPhilosophy: "I focus on acquiring profitable, cash-generating businesses with strong fundamentals. My goal is to preserve what works while implementing operational improvements to drive sustainable growth.",
+    dealSizeSweet: "$2M - $4M",
+    operationalInvolvement: 'operational',
+    riskTolerance: 'conservative',
+    financingPreference: ["Self-Funded", "SBA Loans", "Asset-Based Lending"],
+    marketFocus: ["Manufacturing", "Distribution", "Industrial Services"],
+    teamSize: 8,
+    
+    // Key stats
+    totalCapitalDeployed: 35000000,
+    averageDealSize: 2800000,
+    successfulExits: 12,
+    averageHoldPeriod: 6.8,
+    preferredMultiples: {
+      revenue: 1.2,
+      ebitda: 4.5,
+    },
+    
+    // Contact info
+    phone: "+1-512-555-0234",
+    education: [
+      {
+        institution: "University of Texas",
+        degree: "MBA",
+        field: "Finance",
+        year: 2008,
+      },
+      {
+        institution: "Texas A&M University",
+        degree: "BS",
+        field: "Industrial Engineering",
+        year: 2004,
+      },
+    ],
+    
+    // Profile metrics
+    profileCompleteness: 92,
+    responseRate: 95,
+    
+    // Badges and endorsements
+    badges: [
+      {
+        id: "verified-investor",
+        name: "Verified Investor",
+        description: "Identity and investment capacity verified",
+        icon: "🔒",
+        color: "#10B981",
+        earnedDate: new Date('2022-03-15'),
+        category: 'verification',
+      },
+      {
+        id: "serial-acquirer",
+        name: "Serial Acquirer",
+        description: "Completed 20+ successful acquisitions",
+        icon: "🏆",
+        color: "#8B5CF6",
+        earnedDate: new Date('2023-01-10'),
+        category: 'achievement',
+      },
+      {
+        id: "operations-expert",
+        name: "Operations Expert",
+        description: "Proven track record in operational improvements",
+        icon: "⚙️",
+        color: "#EF4444",
+        earnedDate: new Date('2022-11-05'),
+        category: 'expertise',
+      },
+    ],
+    
+    endorsements: [
+      {
+        id: "end-3",
+        endorserName: "Patricia Williams",
+        endorserTitle: "Former Owner",
+        endorserCompany: "Williams Manufacturing",
+        relationship: "Acquisition Seller",
+        message: "Michael made the acquisition process smooth and kept all promises. Three years later, our employees are thriving and the business has grown 40%. He's the buyer every seller hopes for.",
+        rating: 5,
+        date: new Date('2023-07-20'),
+        verified: true,
+      },
+    ],
+    
+    certifications: ["CPA", "Lean Six Sigma Black Belt"],
+    awards: ["Manufacturing Investor of the Year - Industrial Weekly 2022"],
   },
   {
     id: "buyer-3",

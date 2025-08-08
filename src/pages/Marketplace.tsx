@@ -472,6 +472,7 @@ const Marketplace: React.FC = () => {
               rejectedBuyers.has(selectedBuyer.id)
             : false
         }
+        isMatched={selectedBuyer ? matchedBuyers.has(selectedBuyer.id) : false}
       />
 
       {/* Snackbar for notifications */}
