@@ -25,6 +25,7 @@ import {
   Cancel,
 } from "@mui/icons-material";
 import { useAuth } from "../contexts/AuthContext";
+import { useMatch } from "../contexts/MatchContext";
 import BuyerCard from "../components/marketplace/BuyerCard";
 import BuyerProfileModal from "../components/marketplace/BuyerProfileModal";
 import { mockBuyers } from "../data/mockBuyers";
@@ -33,6 +34,7 @@ import type { BuyerProfile, BuyerFilters } from "../types/buyer";
 const Marketplace: React.FC = () => {
   const theme = useTheme();
   const { user } = useAuth();
+  const { createMatch } = useMatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBuyer, setSelectedBuyer] = useState<BuyerProfile | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -152,18 +154,34 @@ const Marketplace: React.FC = () => {
     });
   }, [searchTerm, filters]);
 
-  const handleAcceptBuyer = (buyerId: string) => {
-    setMatchedBuyers((prev) => new Set([...prev, buyerId]));
-    setRejectedBuyers((prev) => {
-      const newSet = new Set(prev);
-      newSet.delete(buyerId);
-      return newSet;
-    });
-    setSnackbar({
-      open: true,
-      message: "Buyer accepted! They will be notified of your interest.",
-      severity: "success",
-    });
+  const handleAcceptBuyer = async (buyerId: string) => {
+    try {
+      setMatchedBuyers((prev) => new Set([...prev, buyerId]));
+      setRejectedBuyers((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(buyerId);
+        return newSet;
+      });
+
+      // Create a match between the seller and buyer
+      if (user?.id) {
+        await createMatch(buyerId, user.id);
+      }
+
+      setSnackbar({
+        open: true,
+        message:
+          "🎉 Match created! You can now message this buyer directly in your Matches section.",
+        severity: "success",
+      });
+    } catch (error) {
+      console.error("Error creating match:", error);
+      setSnackbar({
+        open: true,
+        message: "Failed to create match. Please try again.",
+        severity: "error",
+      });
+    }
   };
 
   const handleRejectBuyer = (buyerId: string) => {

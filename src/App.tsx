@@ -9,6 +9,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import theme from "./theme/theme";
 import { AuthProvider } from "./contexts/AuthContext";
+import { MatchProvider } from "./contexts/MatchContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import MainLayout from "./components/MainLayout";
 import Dashboard from "./pages/Dashboard";
@@ -29,52 +30,54 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>
-          <Router>
-            <Routes>
-              {/* Authentication Routes */}
-              <Route path="/auth/login" element={<Login />} />
-              <Route path="/auth/signup" element={<Signup />} />
-              <Route
-                path="/auth/role-selection"
-                element={
-                  <ProtectedRoute requireOnboarding={false}>
-                    <RoleSelection />
-                  </ProtectedRoute>
-                }
-              />
+          <MatchProvider>
+            <Router>
+              <Routes>
+                {/* Authentication Routes */}
+                <Route path="/auth/login" element={<Login />} />
+                <Route path="/auth/signup" element={<Signup />} />
+                <Route
+                  path="/auth/role-selection"
+                  element={
+                    <ProtectedRoute requireOnboarding={false}>
+                      <RoleSelection />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Onboarding Route */}
-              <Route
-                path="/onboarding"
-                element={
-                  <ProtectedRoute requireOnboarding={false}>
-                    <Onboarding />
-                  </ProtectedRoute>
-                }
-              />
+                {/* Onboarding Route */}
+                <Route
+                  path="/onboarding"
+                  element={
+                    <ProtectedRoute requireOnboarding={false}>
+                      <Onboarding />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* Protected Main Application Routes */}
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <MainLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<Dashboard />} />
-                <Route path="marketplace" element={<Marketplace />} />
-                <Route path="matches" element={<Matches />} />
-                <Route path="messages" element={<Messages />} />
-                <Route path="tracker" element={<AcquisitionTracker />} />
-                <Route path="profile" element={<Profile />} />
-                <Route path="settings" element={<Settings />} />
-              </Route>
+                {/* Protected Main Application Routes */}
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <MainLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<Dashboard />} />
+                  <Route path="marketplace" element={<Marketplace />} />
+                  <Route path="matches" element={<Matches />} />
+                  <Route path="messages" element={<Messages />} />
+                  <Route path="tracker" element={<AcquisitionTracker />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="settings" element={<Settings />} />
+                </Route>
 
-              {/* Catch all route - redirect to dashboard */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Router>
+                {/* Catch all route - redirect to dashboard */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Router>
+          </MatchProvider>
         </AuthProvider>
       </ThemeProvider>
     );

@@ -25,6 +25,7 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useMatch } from "../contexts/MatchContext";
 import { drawerWidth } from "./Sidebar";
 
 interface TopBarProps {
@@ -35,6 +36,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { getUnreadCount } = useMatch();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationAnchorEl, setNotificationAnchorEl] =
@@ -300,7 +302,10 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
                 },
               }}
             >
-              <Badge badgeContent={3} color="error">
+              <Badge
+                badgeContent={user ? getUnreadCount(user.id) : 0}
+                color="error"
+              >
                 <NotificationsIcon />
               </Badge>
             </IconButton>
