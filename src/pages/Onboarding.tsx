@@ -1,298 +1,251 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
+  Container,
+  Typography,
+  Button,
   Card,
   CardContent,
-  Button,
-  Typography,
   useTheme,
-  Container,
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Avatar,
+  Alert,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import {
-  CheckCircle,
-  BusinessCenter,
-  Storefront,
-  TrendingUp,
-  Handshake,
-  Speed,
-  Security,
-} from "@mui/icons-material";
+import BuyerQuestionnaire from "../components/onboarding/BuyerQuestionnaire";
+import SellerQuestionnaire from "../components/onboarding/SellerQuestionnaire";
+import type {
+  BuyerOnboardingData,
+  SellerOnboardingData,
+} from "../types/onboarding";
 
 const Onboarding: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { user, completeOnboarding } = useAuth();
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const [error, setError] = useState<string>("");
 
-  const handleGetStarted = async () => {
+  const handleStartQuestionnaire = () => {
+    setShowQuestionnaire(true);
+  };
+
+  const handleQuestionnaireComplete = async (
+    data: BuyerOnboardingData | SellerOnboardingData
+  ) => {
     try {
+      // In a real app, you would save this data to your backend
+      console.log("Onboarding data:", data);
+
       await completeOnboarding();
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
-      // Error is handled by context
-      console.error("Failed to complete onboarding:", error);
+      console.error("Error completing onboarding:", error);
+      setError("Failed to complete onboarding. Please try again.");
     }
   };
 
-  const buyerFeatures = [
-    "Browse verified business listings",
-    "AI-powered business matching",
-    "Deal pipeline management",
-    "Due diligence document management",
-    "Direct messaging with business owners",
-    "Market insights and analytics",
-  ];
+  const handleSkipQuestionnaire = async () => {
+    try {
+      await completeOnboarding();
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error completing onboarding:", error);
+      setError("Failed to complete onboarding. Please try again.");
+    }
+  };
 
-  const sellerFeatures = [
-    "Create compelling business profiles",
-    "Professional business valuation tools",
-    "Connect with qualified investors",
-    "Manage buyer inquiries efficiently",
-    "Showcase financials securely",
-    "Market positioning guidance",
-  ];
+  const handleBackToWelcome = () => {
+    setShowQuestionnaire(false);
+  };
 
-  const features = user?.role === "buyer" ? buyerFeatures : sellerFeatures;
-  const roleTitle =
-    user?.role === "buyer" ? "Buyer/Investor" : "Seller/Business Owner";
-  const roleIcon = user?.role === "buyer" ? <BusinessCenter /> : <Storefront />;
+  // Show the appropriate questionnaire if user has started it
+  if (showQuestionnaire && user?.role === "buyer") {
+    return (
+      <BuyerQuestionnaire
+        onComplete={handleQuestionnaireComplete}
+        onBack={handleBackToWelcome}
+      />
+    );
+  }
 
+  if (showQuestionnaire && user?.role === "seller") {
+    return (
+      <SellerQuestionnaire
+        onComplete={handleQuestionnaireComplete}
+        onBack={handleBackToWelcome}
+      />
+    );
+  }
+
+  // Welcome screen
   return (
-    <Container component="main" maxWidth="lg">
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          py: 4,
-        }}
-      >
-        {/* Header */}
-        <Box sx={{ textAlign: "center", mb: 6 }}>
-          <Typography
-            variant="h3"
-            sx={{
-              fontWeight: 700,
-              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              mb: 2,
-            }}
-          >
-            Welcome to DealEase!
-          </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
-            You're all set, {user?.firstName}! 🎉
-          </Typography>
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{ maxWidth: 600, mx: "auto" }}
-          >
-            Your account has been created successfully. Here's what you can do
-            as a {roleTitle}:
-          </Typography>
-        </Box>
-
-        <Grid container spacing={4} sx={{ mb: 6 }}>
-          {/* User Role Card */}
-          <Grid item xs={12} md={6}>
-            <Card
-              sx={{
-                borderRadius: 3,
-                height: "100%",
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}15 0%, ${theme.palette.secondary.main}08 100%)`,
-                border: `1px solid ${theme.palette.primary.main}20`,
-              }}
-            >
-              <CardContent sx={{ p: 4, textAlign: "center" }}>
-                <Avatar
-                  sx={{
-                    width: 80,
-                    height: 80,
-                    mx: "auto",
-                    mb: 3,
-                    background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                    fontSize: "2rem",
-                  }}
-                >
-                  {user?.avatar || "U"}
-                </Avatar>
-
-                <Box
-                  sx={{
-                    mb: 2,
-                    color: theme.palette.primary.main,
-                  }}
-                >
-                  {roleIcon}
-                </Box>
-
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                  {user?.firstName} {user?.lastName}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mb: 1 }}
-                >
-                  {roleTitle}
-                </Typography>
-                {user?.company && (
-                  <Typography variant="body2" color="text.secondary">
-                    {user.company}
-                  </Typography>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Features Card */}
-          <Grid item xs={12} md={6}>
-            <Card
-              sx={{
-                borderRadius: 3,
-                height: "100%",
-              }}
-            >
-              <CardContent sx={{ p: 4 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                  What you can do:
-                </Typography>
-
-                <List dense>
-                  {features.map((feature, index) => (
-                    <ListItem key={index} sx={{ px: 0 }}>
-                      <ListItemIcon sx={{ minWidth: 36 }}>
-                        <CheckCircle
-                          sx={{
-                            color: theme.palette.primary.main,
-                            fontSize: 20,
-                          }}
-                        />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={feature}
-                        primaryTypographyProps={{
-                          variant: "body2",
-                          color: "text.secondary",
-                        }}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-        {/* Platform Benefits */}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: `linear-gradient(135deg, ${theme.palette.primary.main}08 0%, ${theme.palette.secondary.main}08 50%, ${theme.palette.accent?.main}08 100%)`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 2,
+      }}
+    >
+      <Container component="main" maxWidth="md">
         <Card
           sx={{
-            borderRadius: 3,
-            mb: 4,
-            background: theme.palette.grey[50],
+            borderRadius: 4,
+            boxShadow: "0 20px 60px rgba(0, 0, 0, 0.15)",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            background: "rgba(255, 255, 255, 0.95)",
           }}
         >
-          <CardContent sx={{ p: 4 }}>
+          <CardContent sx={{ p: { xs: 4, sm: 6 }, textAlign: "center" }}>
+            {error && (
+              <Alert severity="error" sx={{ mb: 3, borderRadius: 3 }}>
+                {error}
+              </Alert>
+            )}
+
             <Typography
-              variant="h6"
-              sx={{ fontWeight: 600, mb: 3, textAlign: "center" }}
+              variant="h2"
+              sx={{
+                fontWeight: 700,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                mb: 2,
+                fontSize: { xs: "2.5rem", sm: "3.5rem" },
+              }}
             >
-              Why choose DealEase?
+              Welcome to DealEase! 🎉
             </Typography>
 
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={4}>
-                <Box sx={{ textAlign: "center" }}>
-                  <Speed
-                    sx={{
-                      fontSize: 40,
-                      color: theme.palette.primary.main,
-                      mb: 2,
-                    }}
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                    Fast & Efficient
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Streamlined processes to accelerate your business deals
-                  </Typography>
-                </Box>
-              </Grid>
+            <Typography
+              variant="h4"
+              sx={{ fontWeight: 600, mb: 2, color: "text.primary" }}
+            >
+              Hello {user?.firstName}! 👋
+            </Typography>
 
-              <Grid item xs={12} sm={4}>
-                <Box sx={{ textAlign: "center" }}>
-                  <Security
-                    sx={{
-                      fontSize: 40,
-                      color: theme.palette.secondary.main,
-                      mb: 2,
-                    }}
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                    Secure & Trusted
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Bank-level security with verified users and businesses
-                  </Typography>
-                </Box>
-              </Grid>
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{ mb: 4, maxWidth: 600, mx: "auto" }}
+            >
+              You're all set up as a{" "}
+              <Box
+                component="span"
+                sx={{
+                  fontWeight: 700,
+                  color:
+                    user?.role === "buyer"
+                      ? theme.palette.primary.main
+                      : theme.palette.secondary.main,
+                  textTransform: "capitalize",
+                }}
+              >
+                {user?.role}
+              </Box>
+              . Let's personalize your experience to help you{" "}
+              {user?.role === "buyer"
+                ? "find amazing investment opportunities"
+                : "connect with qualified buyers"}
+              .
+            </Typography>
 
-              <Grid item xs={12} sm={4}>
-                <Box sx={{ textAlign: "center" }}>
-                  <TrendingUp
-                    sx={{
-                      fontSize: 40,
-                      color: theme.palette.accent?.main,
-                      mb: 2,
-                    }}
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                    AI-Powered
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Smart matching and insights to find the perfect deals
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
+            <Box
+              sx={{
+                p: 3,
+                borderRadius: 3,
+                backgroundColor:
+                  user?.role === "buyer"
+                    ? `${theme.palette.primary.main}08`
+                    : `${theme.palette.secondary.main}08`,
+                border: `2px solid ${
+                  user?.role === "buyer"
+                    ? theme.palette.primary.main
+                    : theme.palette.secondary.main
+                }20`,
+                mb: 4,
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
+                🚀 Quick Setup (
+                {user?.role === "buyer" ? "5 minutes" : "4 minutes"})
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                Complete our quick questionnaire to get personalized matches and
+                recommendations.
+                {user?.role === "buyer"
+                  ? " We'll ask about your investment preferences, experience, and goals."
+                  : " We'll ask about your business, financials, and what makes it special."}
+              </Typography>
+
+              <Button
+                variant="contained"
+                size="large"
+                onClick={handleStartQuestionnaire}
+                sx={{
+                  borderRadius: 3,
+                  py: 2,
+                  px: 4,
+                  fontSize: "1.1rem",
+                  fontWeight: 600,
+                  background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                  boxShadow: `0 8px 25px ${theme.palette.primary.main}40`,
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    boxShadow: `0 12px 35px ${theme.palette.primary.main}50`,
+                    background: `linear-gradient(45deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.dark})`,
+                  },
+                }}
+              >
+                {user?.role === "buyer"
+                  ? "🏢 Set Up Investment Profile"
+                  : "🏪 Set Up Business Profile"}
+              </Button>
+            </Box>
+
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Want to explore first?
+            </Typography>
+
+            <Button
+              variant="outlined"
+              onClick={handleSkipQuestionnaire}
+              sx={{
+                borderRadius: 3,
+                py: 1.5,
+                px: 3,
+                fontWeight: 600,
+                borderWidth: 2,
+                borderColor: theme.palette.grey[400],
+                color: theme.palette.text.secondary,
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  borderWidth: 2,
+                  borderColor: theme.palette.grey[600],
+                  backgroundColor: `${theme.palette.grey[100]}`,
+                  transform: "translateY(-1px)",
+                },
+              }}
+            >
+              Skip for now
+            </Button>
+
+            <Typography
+              variant="caption"
+              sx={{ display: "block", mt: 3, opacity: 0.7 }}
+            >
+              You can always complete this setup later from your profile
+              settings
+            </Typography>
           </CardContent>
         </Card>
-
-        {/* Action Button */}
-        <Box sx={{ textAlign: "center" }}>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={handleGetStarted}
-            sx={{
-              borderRadius: 3,
-              px: 6,
-              py: 2,
-              fontSize: "1.1rem",
-              fontWeight: 600,
-              boxShadow: "0 8px 32px rgba(79, 195, 247, 0.3)",
-            }}
-          >
-            Get Started with DealEase
-          </Button>
-
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-            You can update your profile and preferences anytime in Settings
-          </Typography>
-        </Box>
-      </Box>
-    </Container>
+      </Container>
+    </Box>
   );
 };
 
