@@ -30,12 +30,12 @@ import {
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { initDemo } from "../../utils/demoMode";
-import { useAuth } from "../../contexts/AuthContext";
+import { useUserStore } from "../../store/userStore";
 
 export const DemoLanding: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { login } = useAuth();
+  const { login } = useUserStore();
   const [loading, setLoading] = useState(false);
 
   const handleStartDemo = async (density: "light" | "medium" | "heavy") => {

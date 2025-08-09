@@ -13,7 +13,6 @@ import {
   Chip,
   useTheme,
   Stack,
-  Badge,
   TextField,
   InputAdornment,
   FormControl,
@@ -34,26 +33,21 @@ import {
   Assessment,
   Visibility,
   Edit,
-  Archive,
-  Warning,
-  CheckCircle,
   Assignment,
 } from "@mui/icons-material";
-import { useAuth } from "../contexts/AuthContext";
-import { useMatch } from "../contexts/MatchContext";
+import { useUserStore } from "../store/userStore";
+import { useMatchStore } from "../store/matchStore";
+import { useDealStore } from "../store/dealStore";
 import DealWorkflow from "../components/acquisition/DealWorkflow";
 import StageDetails from "../components/acquisition/StageDetails";
 import { mockDeals } from "../data/mockDeals";
-import type {
-  AcquisitionDeal,
-  DealStage,
-  DealFilters,
-} from "../types/acquisition";
+import type { AcquisitionDeal, DealStage } from "../types/acquisition";
 
 const AcquisitionTracker: React.FC = () => {
   const theme = useTheme();
-  const { user } = useAuth();
-  const { getMatchesByUser } = useMatch();
+  const { user } = useUserStore();
+  const { getMatchesByUser } = useMatchStore();
+  const { deals, loadDeals } = useDealStore();
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedDeal, setSelectedDeal] = useState<AcquisitionDeal | null>(
     null
@@ -110,7 +104,7 @@ const AcquisitionTracker: React.FC = () => {
       "data-room": theme.palette.primary.main,
       offer: theme.palette.secondary.main,
       "due-diligence": theme.palette.warning.main,
-      loi: theme.palette.orange?.[600] || theme.palette.warning.main,
+      loi: theme.palette.warning.main,
       closing: theme.palette.success.main,
     };
     return colors[stage] || theme.palette.grey[500];

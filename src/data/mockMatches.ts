@@ -251,7 +251,7 @@ export const mockMatches: Match[] = [
       type: "text",
     },
 
-    dealStage: "data-room",
+    dealStage: "due-diligence",
     nextSteps: [
       "Schedule restaurant visits",
       "Review lease agreements",
@@ -318,7 +318,7 @@ export const mockMatches: Match[] = [
       type: "text",
     },
 
-    dealStage: "offer-preparation",
+    dealStage: "negotiation",
     nextSteps: [
       "Prepare initial offer",
       "Financial analysis review",
@@ -385,7 +385,7 @@ export const mockMatches: Match[] = [
       type: "text",
     },
 
-    dealStage: "discovery",
+    dealStage: "initial-contact",
     nextSteps: [
       "Share client case studies",
       "Discuss process documentation",

@@ -18,11 +18,11 @@ import {
 } from "@mui/icons-material";
 import { FriendlyTooltip } from "../components/common/FriendlyTooltip";
 import { microcopy } from "../utils/microcopy";
-import { useAuth } from "../contexts/AuthContext";
+import { useUserStore } from "../store/userStore";
 
 const Dashboard: React.FC = () => {
   const theme = useTheme();
-  const { user } = useAuth();
+  const { user } = useUserStore();
 
   // Determine user role and customize experience
   const isBuyer = user?.role === "buyer";

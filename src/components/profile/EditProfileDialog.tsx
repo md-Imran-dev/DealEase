@@ -28,7 +28,7 @@ import {
   LocationOn,
   Description,
 } from "@mui/icons-material";
-import { useAuth } from "../../contexts/AuthContext";
+import { useUserStore } from "../../store/userStore";
 import type { User } from "../../types/auth";
 
 interface EditProfileDialogProps {
@@ -57,7 +57,7 @@ const EditProfileDialog: React.FC<EditProfileDialogProps> = ({
   onSave,
 }) => {
   const theme = useTheme();
-  const { user } = useAuth();
+  const { user } = useUserStore();
   const [activeTab, setActiveTab] = useState(0);
   const [formData, setFormData] = useState<FormData>({
     firstName: "",

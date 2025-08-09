@@ -24,8 +24,8 @@ import {
   Science,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { useMatch } from "../contexts/MatchContext";
+import { useUserStore } from "../store/userStore";
+import { useChatStore } from "../store/chatStore";
 import { drawerWidth } from "./Sidebar";
 import { DemoModePanel } from "./demo/DemoModePanel";
 import { FriendlyTooltip } from "./common/FriendlyTooltip";
@@ -37,8 +37,8 @@ interface TopBarProps {
 const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
-  const { getUnreadCount } = useMatch();
+  const { user, logout } = useUserStore();
+  const { getUnreadCount } = useChatStore();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationAnchorEl, setNotificationAnchorEl] =

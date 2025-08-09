@@ -22,7 +22,7 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useUserStore } from "../../store/userStore";
 import type { LoginCredentials } from "../../types/auth";
 
 const Login: React.FC = () => {
@@ -30,7 +30,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { login, isLoading, error, clearError } = useAuth();
+  const { login, isLoading, error, clearError } = useUserStore();
 
   // Check if user came from demo landing
   const isFromDemo = searchParams.get("demo") === "true";
@@ -125,7 +125,9 @@ const Login: React.FC = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: "red",
         p: 2,
+        border: "1px solid red",
       }}
     >
       <Container component="main" maxWidth="sm">

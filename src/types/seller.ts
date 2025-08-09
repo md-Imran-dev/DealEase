@@ -98,4 +98,8 @@ export interface SellerProfile {
 
     certifications?: string[];
     awards?: string[];
+    
+    // Onboarding and profile completion
+    isOnboarded?: boolean;
+    onboardingData?: any;
 }

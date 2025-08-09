@@ -12,7 +12,7 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useUserStore } from "../store/userStore";
 import { microcopy } from "../utils/microcopy";
 import BuyerQuestionnaire from "../components/onboarding/BuyerQuestionnaire";
 import SellerQuestionnaire from "../components/onboarding/SellerQuestionnaire";
@@ -24,7 +24,7 @@ import type {
 const Onboarding: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { user, completeOnboarding } = useAuth();
+  const { user, completeOnboarding } = useUserStore();
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
   const [error, setError] = useState<string>("");
 

@@ -30,14 +30,14 @@ import {
   VideoCall,
   Archive,
 } from "@mui/icons-material";
-import { useAuth } from "../contexts/AuthContext";
-import { useMatch } from "../contexts/MatchContext";
+import { useUserStore } from "../store/userStore";
+import { useMatchStore } from "../store/matchStore";
 import type { Match } from "../types/match";
 
 const Matches: React.FC = () => {
   const theme = useTheme();
-  const { user } = useAuth();
-  const { getMatchesByUser, updateMatchStatus } = useMatch();
+  const { user } = useUserStore();
+  const { getMatchesByUser, updateMatchStatus } = useMatchStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("active");
   const [stageFilter, setStageFilter] = useState<string>("all");

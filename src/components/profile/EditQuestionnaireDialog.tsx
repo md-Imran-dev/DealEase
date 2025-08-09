@@ -33,7 +33,7 @@ import {
   Business,
   AttachMoney,
 } from "@mui/icons-material";
-import { useAuth } from "../../contexts/AuthContext";
+import { useUserStore } from "../../store/userStore";
 import type {
   BuyerOnboardingData,
   SellerOnboardingData,
@@ -51,7 +51,7 @@ const EditQuestionnaireDialog: React.FC<EditQuestionnaireDialogProps> = ({
   onSave,
 }) => {
   const theme = useTheme();
-  const { user } = useAuth();
+  const { user } = useUserStore();
   const [buyerData, setBuyerData] = useState<BuyerOnboardingData>({
     desiredIndustries: [],
     investmentRange: { min: 100000, max: 10000000 },

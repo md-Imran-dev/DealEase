@@ -18,7 +18,6 @@ import {
 import {
   CloudUpload,
   Close,
-  CropFree,
   ZoomIn,
   ZoomOut,
   RotateLeft,

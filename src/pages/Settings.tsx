@@ -47,7 +47,7 @@ import {
   Shield,
   Backup,
 } from "@mui/icons-material";
-import { useAuth } from "../contexts/AuthContext";
+import { useUserStore } from "../store/userStore";
 
 interface SettingItem {
   id: string;
@@ -58,7 +58,7 @@ interface SettingItem {
 
 const Settings: React.FC = () => {
   const theme = useTheme();
-  const { user, updateUser } = useAuth();
+  const { user, updateUser } = useUserStore();
 
   const [notificationSettings, setNotificationSettings] = useState<
     SettingItem[]

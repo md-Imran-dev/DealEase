@@ -17,17 +17,16 @@ import {
   Step,
   Stepper,
   StepLabel,
-  Divider,
 } from "@mui/material";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useUserStore } from "../../store/userStore";
 import type { SignupData } from "../../types/auth";
 import RoleSelector from "../../components/auth/RoleSelector";
 
 const Signup: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { signup, isLoading, error, clearError } = useAuth();
+  const { signup, isLoading, error, clearError } = useUserStore();
 
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState<SignupData>({

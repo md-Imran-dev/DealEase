@@ -11,13 +11,13 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useUserStore } from "../../store/userStore";
 import RoleSelector from "../../components/auth/RoleSelector";
 
 const RoleSelection: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { updateUserRole, isLoading, error, user } = useAuth();
+  const { updateUserRole, isLoading, error, user } = useUserStore();
 
   const [selectedRole, setSelectedRole] = useState<
     "buyer" | "seller" | undefined

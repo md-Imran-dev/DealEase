@@ -68,6 +68,10 @@ export interface BuyerProfile {
   verifiedStatus?: boolean;
   profileCompleteness?: number;
   responseRate?: number;
+  
+  // Onboarding and profile completion
+  isOnboarded?: boolean;
+  onboardingData?: any;
 }
 
 export interface BuyerBadge {

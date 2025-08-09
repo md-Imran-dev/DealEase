@@ -37,8 +37,8 @@ import {
   Twitter,
   Star,
 } from "@mui/icons-material";
-import { useAuth } from "../contexts/AuthContext";
-import { useMatch } from "../contexts/MatchContext";
+import { useUserStore } from "../store/userStore";
+import { useMatchStore } from "../store/matchStore";
 import ProfilePictureUpload from "../components/profile/ProfilePictureUpload";
 import EditProfileDialog from "../components/profile/EditProfileDialog";
 import EditQuestionnaireDialog from "../components/profile/EditQuestionnaireDialog";
@@ -50,8 +50,8 @@ import type {
 
 const Profile: React.FC = () => {
   const theme = useTheme();
-  const { user, updateUser } = useAuth();
-  const { getMatchesByUser } = useMatch();
+  const { user, updateUser } = useUserStore();
+  const { getMatchesByUser } = useMatchStore();
 
   const [profilePictureOpen, setProfilePictureOpen] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);

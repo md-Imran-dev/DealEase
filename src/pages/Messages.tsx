@@ -6,6 +6,7 @@ import {
   Grid,
   List,
   ListItem,
+  ListItemButton,
   ListItemAvatar,
   ListItemText,
   Avatar,
@@ -23,8 +24,9 @@ import {
   Add,
   Archive,
 } from "@mui/icons-material";
-import { useAuth } from "../contexts/AuthContext";
-import { useMatch } from "../contexts/MatchContext";
+import { useUserStore } from "../store/userStore";
+import { useMatchStore } from "../store/matchStore";
+import { useChatStore } from "../store/chatStore";
 import MessagesList from "../components/messaging/MessagesList";
 import ConversationFilters from "../components/messaging/ConversationFilters";
 import MessageNotification from "../components/messaging/MessageNotification";
@@ -32,8 +34,9 @@ import type { Match, MatchFilters } from "../types/match";
 
 const Messages: React.FC = () => {
   const theme = useTheme();
-  const { user } = useAuth();
-  const { getMatchesByUser, getMessagesByMatch, sendMessage } = useMatch();
+  const { user } = useUserStore();
+  const { getMatchesByUser } = useMatchStore();
+  const { getMessagesByMatch, sendMessage } = useChatStore();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<MatchFilters>({});
@@ -172,8 +175,19 @@ const Messages: React.FC = () => {
 
   const handleSendMessage = async (content: string, attachments?: any) => {
     if (selectedMatch && user?.id) {
+      // Determine receiver ID - get the other party in the match
+      const receiverId =
+        user.role === "buyer" ? selectedMatch.sellerId : selectedMatch.buyerId;
+
       // In a real app, you'd handle attachments properly
-      await sendMessage(selectedMatch.id, content, attachments);
+      await sendMessage(
+        selectedMatch.id,
+        content,
+        user.id,
+        receiverId,
+        "text",
+        attachments
+      );
     }
   };
 
@@ -277,112 +291,115 @@ const Messages: React.FC = () => {
 
                       return (
                         <React.Fragment key={match.id}>
-                          <ListItem
-                            button
-                            selected={isSelected}
-                            onClick={() => setSelectedMatch(match)}
-                            sx={{
-                              py: 2,
-                              px: 2,
-                              "&.Mui-selected": {
-                                backgroundColor:
-                                  theme.palette.primary.main + "08",
-                                borderRight: `3px solid ${theme.palette.primary.main}`,
-                              },
-                              "&:hover": {
-                                backgroundColor: theme.palette.grey[50],
-                              },
-                            }}
-                          >
-                            <ListItemAvatar>
-                              <Badge
-                                badgeContent={
-                                  unreadCount > 0 ? unreadCount : undefined
-                                }
-                                color="error"
-                                overlap="circular"
-                              >
-                                <Avatar
-                                  src={otherParty.profilePicture}
-                                  sx={{
-                                    background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                                  }}
+                          <ListItem disablePadding>
+                            <ListItemButton
+                              selected={isSelected}
+                              onClick={() => setSelectedMatch(match)}
+                              sx={{
+                                py: 2,
+                                px: 2,
+                                "&.Mui-selected": {
+                                  backgroundColor:
+                                    theme.palette.primary.main + "08",
+                                  borderRight: `3px solid ${theme.palette.primary.main}`,
+                                },
+                                "&:hover": {
+                                  backgroundColor: theme.palette.grey[50],
+                                },
+                              }}
+                            >
+                              <ListItemAvatar>
+                                <Badge
+                                  badgeContent={
+                                    unreadCount > 0 ? unreadCount : undefined
+                                  }
+                                  color="error"
+                                  overlap="circular"
                                 >
-                                  {otherParty.avatar}
-                                </Avatar>
-                              </Badge>
-                            </ListItemAvatar>
-
-                            <ListItemText
-                              primary={
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    mb: 0.5,
-                                  }}
-                                >
-                                  <Typography
-                                    variant="subtitle2"
+                                  <Avatar
+                                    src={otherParty.profilePicture}
                                     sx={{
-                                      fontWeight: unreadCount > 0 ? 600 : 500,
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      whiteSpace: "nowrap",
+                                      background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                                     }}
                                   >
-                                    {otherParty.firstName} {otherParty.lastName}
-                                  </Typography>
+                                    {otherParty.avatar}
+                                  </Avatar>
+                                </Badge>
+                              </ListItemAvatar>
 
-                                  {match.lastMessage && (
+                              <ListItemText
+                                primary={
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                      mb: 0.5,
+                                    }}
+                                  >
                                     <Typography
-                                      variant="caption"
-                                      color="text.secondary"
-                                      sx={{ ml: 1, flexShrink: 0 }}
-                                    >
-                                      {formatLastMessageTime(
-                                        match.lastMessage.timestamp
-                                      )}
-                                    </Typography>
-                                  )}
-                                </Box>
-                              }
-                              secondary={
-                                <Box>
-                                  {match.business && (
-                                    <Typography
-                                      variant="caption"
-                                      color="text.secondary"
+                                      variant="subtitle2"
                                       sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: 0.5,
-                                        mb: 0.5,
-                                      }}
-                                    >
-                                      <Business sx={{ fontSize: 12 }} />
-                                      {match.business.name}
-                                    </Typography>
-                                  )}
-
-                                  {match.lastMessage && (
-                                    <Typography
-                                      variant="body2"
-                                      color="text.secondary"
-                                      sx={{
-                                        fontWeight: unreadCount > 0 ? 500 : 400,
+                                        fontWeight: unreadCount > 0 ? 600 : 500,
                                         overflow: "hidden",
                                         textOverflow: "ellipsis",
                                         whiteSpace: "nowrap",
                                       }}
                                     >
-                                      {match.lastMessage.content}
+                                      {otherParty.firstName}{" "}
+                                      {otherParty.lastName}
                                     </Typography>
-                                  )}
-                                </Box>
-                              }
-                            />
+
+                                    {match.lastMessage && (
+                                      <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{ ml: 1, flexShrink: 0 }}
+                                      >
+                                        {formatLastMessageTime(
+                                          match.lastMessage.timestamp
+                                        )}
+                                      </Typography>
+                                    )}
+                                  </Box>
+                                }
+                                secondary={
+                                  <Box>
+                                    {match.business && (
+                                      <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: 0.5,
+                                          mb: 0.5,
+                                        }}
+                                      >
+                                        <Business sx={{ fontSize: 12 }} />
+                                        {match.business.name}
+                                      </Typography>
+                                    )}
+
+                                    {match.lastMessage && (
+                                      <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        sx={{
+                                          fontWeight:
+                                            unreadCount > 0 ? 500 : 400,
+                                          overflow: "hidden",
+                                          textOverflow: "ellipsis",
+                                          whiteSpace: "nowrap",
+                                        }}
+                                      >
+                                        {match.lastMessage.content}
+                                      </Typography>
+                                    )}
+                                  </Box>
+                                }
+                              />
+                            </ListItemButton>
                           </ListItem>
                           <Divider />
                         </React.Fragment>
