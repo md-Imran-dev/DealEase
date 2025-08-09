@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import type { ReactNode } from "react";
-``;
 import type {
   AuthState,
   LoginCredentials,
@@ -13,6 +12,7 @@ export interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   signup: (data: SignupData) => Promise<void>;
   logout: () => void;
+  updateUser: (userData: User) => Promise<void>;
   updateUserRole: (role: "buyer" | "seller") => Promise<void>;
   completeOnboarding: () => Promise<void>;
   clearError: () => void;
@@ -191,6 +191,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: "AUTH_LOGOUT" });
   };
 
+  const updateUser = async (userData: User): Promise<void> => {
+    if (!state.user) return;
+
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      const updatedUser = { ...state.user, ...userData };
+      localStorage.setItem("dealease_user", JSON.stringify(updatedUser));
+
+      dispatch({ type: "UPDATE_USER", payload: userData });
+    } catch (error) {
+      dispatch({ type: "AUTH_ERROR", payload: "Failed to update user" });
+      throw error;
+    }
+  };
+
   const updateUserRole = async (role: "buyer" | "seller"): Promise<void> => {
     if (!state.user) return;
 
@@ -237,6 +254,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     signup,
     logout,
+    updateUser,
     updateUserRole,
     completeOnboarding,
     clearError,

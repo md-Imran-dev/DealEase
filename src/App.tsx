@@ -19,6 +19,7 @@ import Messages from "./pages/Messages";
 import AcquisitionTracker from "./pages/AcquisitionTracker";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import RoleSelection from "./pages/auth/RoleSelection";
@@ -69,8 +70,22 @@ function App() {
                   <Route path="matches" element={<Matches />} />
                   <Route path="messages" element={<Messages />} />
                   <Route path="tracker" element={<AcquisitionTracker />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route path="settings" element={<Settings />} />
+                  <Route
+                    path="profile"
+                    element={
+                      <ErrorBoundary>
+                        <Profile />
+                      </ErrorBoundary>
+                    }
+                  />
+                  <Route
+                    path="settings"
+                    element={
+                      <ErrorBoundary>
+                        <Settings />
+                      </ErrorBoundary>
+                    }
+                  />
                 </Route>
 
                 {/* Catch all route - redirect to dashboard */}
@@ -87,7 +102,7 @@ function App() {
       <div style={{ padding: "20px", textAlign: "center" }}>
         <h1>Something went wrong</h1>
         <p>Please check the console for errors.</p>
-        <pre>{error?.toString()}</pre>
+        <pre>{String(error)}</pre>
       </div>
     );
   }

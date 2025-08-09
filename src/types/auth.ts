@@ -6,8 +6,19 @@ export interface User {
   role?: "buyer" | "seller";
   avatar?: string;
   company?: string;
+  title?: string;
   phone?: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  linkedin?: string;
+  twitter?: string;
+  profilePicture?: string;
+  industries?: string[];
+  skills?: string[];
   isOnboarded: boolean;
+  onboardingData?: any; // BuyerOnboardingData | SellerOnboardingData
+  settings?: any; // User settings
   createdAt: string;
   lastLoginAt: string;
 }
