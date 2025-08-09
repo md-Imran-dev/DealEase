@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
+import type { ReactNode } from "react";
+``;
 import type {
   AuthState,
   LoginCredentials,
@@ -123,13 +125,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Mock user data - in real app, this would come from your backend
+      const isSeller = credentials.email === "seller@demo.com";
       const mockUser: User = {
         id: "1",
         email: credentials.email,
         firstName: "John",
         lastName: "Doe",
-        role: "buyer",
-        company: "Growth Capital Partners",
+        role: isSeller ? "seller" : "buyer",
+        company: isSeller ? "DoeFlow Solutions" : "Growth Capital Partners",
         avatar: "JD",
         phone: "+1 (555) 123-4567",
         isOnboarded: true,

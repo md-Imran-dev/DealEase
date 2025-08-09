@@ -42,6 +42,7 @@ import {
   Warning,
   Person,
   Business,
+  Psychology,
 } from "@mui/icons-material";
 import type {
   DealStageData,
@@ -49,6 +50,8 @@ import type {
   DealDocument,
   StageComment,
 } from "../../types/acquisition";
+import type { AIDocumentAnalysis } from "../../types/aiAnalysis";
+import AIDocumentAnalyzer from "../ai/AIDocumentAnalyzer";
 
 interface StageDetailsProps {
   stage: DealStageData;
@@ -77,11 +80,13 @@ const StageDetails: React.FC<StageDetailsProps> = ({
   const [expandedSections, setExpandedSections] = useState({
     checklist: true,
     documents: true,
+    aiAnalysis: true,
     comments: true,
     approvals: true,
   });
   const [newComment, setNewComment] = useState("");
   const [commentPrivate, setCommentPrivate] = useState(false);
+  const [aiAnalyses, setAiAnalyses] = useState<AIDocumentAnalysis[]>([]);
 
   const handleSectionToggle = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({
@@ -96,6 +101,10 @@ const StageDetails: React.FC<StageDetailsProps> = ({
       setNewComment("");
       setCommentPrivate(false);
     }
+  };
+
+  const handleAIAnalysisComplete = (analysis: AIDocumentAnalysis) => {
+    setAiAnalyses((prev) => [...prev, analysis]);
   };
 
   const getDocumentIcon = (type: DealDocument["type"]) => {
@@ -546,6 +555,122 @@ const StageDetails: React.FC<StageDetailsProps> = ({
                   }}
                 />
               </Button>
+            </AccordionDetails>
+          </Accordion>
+        </Grid>
+
+        {/* AI Analysis Section */}
+        <Grid item xs={12}>
+          <Accordion
+            expanded={expandedSections.aiAnalysis}
+            onChange={() => handleSectionToggle("aiAnalysis")}
+            sx={{ borderRadius: 3 }}
+          >
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                  width: "100%",
+                }}
+              >
+                <Psychology color="info" />
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  AI Document Analysis
+                </Typography>
+                <Badge badgeContent={aiAnalyses.length} color="info" />
+              </Box>
+            </AccordionSummary>
+
+            <AccordionDetails>
+              <AIDocumentAnalyzer
+                onAnalysisComplete={handleAIAnalysisComplete}
+                allowedFileTypes={[".pdf", ".xlsx", ".xls", ".csv"]}
+                maxFileSize={10 * 1024 * 1024} // 10MB
+                disabled={false}
+              />
+
+              {/* Show completed AI analyses summary */}
+              {aiAnalyses.length > 0 && (
+                <Box sx={{ mt: 3 }}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: 600, mb: 2 }}
+                  >
+                    Completed AI Analyses ({aiAnalyses.length})
+                  </Typography>
+
+                  <Stack spacing={2}>
+                    {aiAnalyses.map((analysis) => (
+                      <Paper
+                        key={analysis.id}
+                        sx={{
+                          p: 2,
+                          borderRadius: 2,
+                          border: `1px solid ${theme.palette.info.main}40`,
+                          backgroundColor: theme.palette.info.main + "08",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            mb: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ fontWeight: 600 }}
+                          >
+                            {analysis.documentName}
+                          </Typography>
+                          <Chip
+                            label={`${analysis.confidence}% confidence`}
+                            size="small"
+                            color="info"
+                          />
+                        </Box>
+
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mb: 2 }}
+                        >
+                          {analysis.summary.overview.substring(0, 200)}...
+                        </Typography>
+
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          flexWrap="wrap"
+                          useFlexGap
+                        >
+                          <Chip
+                            label={`${analysis.highlights.length} Highlights`}
+                            size="small"
+                            color="success"
+                            variant="outlined"
+                          />
+                          <Chip
+                            label={`${analysis.risks.length} Risks`}
+                            size="small"
+                            color="warning"
+                            variant="outlined"
+                          />
+                          <Chip
+                            label={`${analysis.recommendations.length} Recommendations`}
+                            size="small"
+                            color="info"
+                            variant="outlined"
+                          />
+                        </Stack>
+                      </Paper>
+                    ))}
+                  </Stack>
+                </Box>
+              )}
             </AccordionDetails>
           </Accordion>
         </Grid>
