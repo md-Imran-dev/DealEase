@@ -4,29 +4,49 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4FC3F7', // Soft blue
-      light: '#81D4FA',
-      dark: '#29B6F6',
+      main: '#667eea', // Friendly blue - more approachable
+      light: '#8ba5ff',
+      dark: '#3f51b5',
       contrastText: '#fff',
     },
     secondary: {
-      main: '#26A69A', // Teal
-      light: '#4DB6AC',
-      dark: '#00695C',
+      main: '#f093fb', // Soft pink gradient - modern and welcoming
+      light: '#f5b7ff',
+      dark: '#c77dfe',
       contrastText: '#fff',
     },
     accent: {
-      main: '#FFAB91', // Peach
-      light: '#FFCCBC',
-      dark: '#FF8A65',
+      main: '#4ade80', // Fresh green - optimistic
+      light: '#86efac',
+      dark: '#22c55e',
+    },
+    success: {
+      main: '#4ade80',
+      light: '#86efac',
+      dark: '#22c55e',
+    },
+    warning: {
+      main: '#fbbf24',
+      light: '#fcd34d',
+      dark: '#f59e0b',
+    },
+    error: {
+      main: '#f87171',
+      light: '#fca5a5',
+      dark: '#ef4444',
+    },
+    info: {
+      main: '#60a5fa',
+      light: '#93c5fd',
+      dark: '#3b82f6',
     },
     background: {
-      default: '#F8FAFB',
+      default: '#fefefe', // Softer white for reduced eye strain
       paper: '#FFFFFF',
     },
     text: {
-      primary: '#2C3E50',
-      secondary: '#607D8B',
+      primary: '#1f2937', // Softer black for better readability
+      secondary: '#6b7280', // Warm gray for secondary text
     },
     grey: {
       50: '#FAFAFA',
@@ -42,67 +62,94 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "SF Pro Display", "Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
-      fontWeight: 600,
-      fontSize: '2.5rem',
-      lineHeight: 1.2,
+      fontWeight: 700,
+      fontSize: '2.75rem',
+      lineHeight: 1.15,
+      letterSpacing: '-0.025em',
     },
     h2: {
       fontWeight: 600,
-      fontSize: '2rem',
-      lineHeight: 1.3,
+      fontSize: '2.25rem',
+      lineHeight: 1.2,
+      letterSpacing: '-0.02em',
     },
     h3: {
       fontWeight: 600,
-      fontSize: '1.75rem',
-      lineHeight: 1.3,
+      fontSize: '1.875rem',
+      lineHeight: 1.25,
+      letterSpacing: '-0.015em',
     },
     h4: {
       fontWeight: 600,
       fontSize: '1.5rem',
-      lineHeight: 1.4,
+      lineHeight: 1.3,
+      letterSpacing: '-0.01em',
     },
     h5: {
       fontWeight: 600,
       fontSize: '1.25rem',
-      lineHeight: 1.4,
+      lineHeight: 1.35,
+      letterSpacing: '-0.005em',
     },
     h6: {
       fontWeight: 600,
-      fontSize: '1rem',
+      fontSize: '1.125rem',
       lineHeight: 1.4,
     },
     body1: {
       fontSize: '1rem',
-      lineHeight: 1.5,
+      lineHeight: 1.65,
+      letterSpacing: '0.01em',
     },
     body2: {
       fontSize: '0.875rem',
-      lineHeight: 1.5,
+      lineHeight: 1.6,
+      letterSpacing: '0.01em',
     },
     button: {
-      fontWeight: 500,
+      fontWeight: 600,
       textTransform: 'none' as const,
+      letterSpacing: '0.025em',
+    },
+    caption: {
+      fontSize: '0.75rem',
+      lineHeight: 1.5,
+      letterSpacing: '0.02em',
     },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 16, // More rounded for friendlier feel
   },
   spacing: 8,
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 12,
           textTransform: 'none',
-          fontWeight: 500,
-          padding: '8px 16px',
+          fontWeight: 600,
+          padding: '12px 24px',
+          fontSize: '0.95rem',
+          boxShadow: 'none',
+          transition: 'all 0.2s ease-in-out',
+          '&:hover': {
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
+            transform: 'translateY(-1px)',
+          },
         },
         contained: {
-          boxShadow: '0px 2px 8px rgba(79, 195, 247, 0.3)',
+          background: 'linear-gradient(135deg, #667eea 0%, #f093fb 100%)',
           '&:hover': {
-            boxShadow: '0px 4px 12px rgba(79, 195, 247, 0.4)',
+            background: 'linear-gradient(135deg, #3f51b5 0%, #c77dfe 100%)',
+          },
+        },
+        outlined: {
+          borderWidth: '2px',
+          '&:hover': {
+            borderWidth: '2px',
+            backgroundColor: 'rgba(102, 126, 234, 0.08)',
           },
         },
       },
@@ -110,11 +157,91 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.08)',
+          borderRadius: 20,
+          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.05)',
+          border: '1px solid rgba(0, 0, 0, 0.02)',
+          transition: 'all 0.3s ease-in-out',
           '&:hover': {
-            boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.12)',
+            boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.12)',
+            transform: 'translateY(-2px)',
           },
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 12,
+            fontSize: '0.95rem',
+            '& fieldset': {
+              borderColor: '#e5e7eb',
+              borderWidth: '2px',
+            },
+            '&:hover fieldset': {
+              borderColor: '#8ba5ff',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#667eea',
+              borderWidth: '2px',
+            },
+          },
+          '& .MuiInputLabel-root': {
+            fontSize: '0.95rem',
+            fontWeight: 500,
+          },
+          '& .MuiFormHelperText-root': {
+            fontSize: '0.8rem',
+            marginTop: 8,
+          },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          fontWeight: 500,
+          fontSize: '0.85rem',
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: '#1f2937',
+          fontSize: '0.8rem',
+          fontWeight: 500,
+          borderRadius: 8,
+          padding: '8px 12px',
+          maxWidth: 250,
+        },
+        arrow: {
+          color: '#1f2937',
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          fontSize: '0.9rem',
+          '& .MuiAlert-icon': {
+            fontSize: '1.2rem',
+          },
+        },
+      },
+    },
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          height: 8,
+          backgroundColor: '#f3f4f6',
+        },
+        bar: {
+          borderRadius: 8,
+          background: 'linear-gradient(90deg, #667eea 0%, #f093fb 100%)',
         },
       },
     },

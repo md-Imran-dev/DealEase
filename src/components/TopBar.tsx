@@ -30,6 +30,7 @@ import { useMatch } from "../contexts/MatchContext";
 import { drawerWidth } from "./Sidebar";
 import { DemoModePanel } from "./demo/DemoModePanel";
 import { isDemo } from "../utils/demoMode";
+import { FriendlyTooltip } from "./common/FriendlyTooltip";
 
 interface TopBarProps {
   onMobileMenuToggle: () => void;
@@ -302,28 +303,30 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
           {/* Right side - Notifications and Profile */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {/* Notifications */}
-            <IconButton
-              size="large"
-              aria-label="show notifications"
-              aria-controls={notificationMenuId}
-              aria-haspopup="true"
-              onClick={handleNotificationMenuOpen}
-              color="inherit"
-              sx={{
-                color: "text.secondary",
-                "&:hover": {
-                  backgroundColor: theme.palette.primary.main + "08",
-                  color: "primary.main",
-                },
-              }}
-            >
-              <Badge
-                badgeContent={user ? getUnreadCount(user.id) : 0}
-                color="error"
+            <FriendlyTooltip titleKey="notifications">
+              <IconButton
+                size="large"
+                aria-label="show notifications"
+                aria-controls={notificationMenuId}
+                aria-haspopup="true"
+                onClick={handleNotificationMenuOpen}
+                color="inherit"
+                sx={{
+                  color: "text.secondary",
+                  "&:hover": {
+                    backgroundColor: theme.palette.primary.main + "08",
+                    color: "primary.main",
+                  },
+                }}
               >
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+                <Badge
+                  badgeContent={user ? getUnreadCount(user.id) : 0}
+                  color="error"
+                >
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </FriendlyTooltip>
 
             {/* Profile Menu */}
             <IconButton

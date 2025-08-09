@@ -8,9 +8,12 @@ import {
   CardContent,
   useTheme,
   Alert,
+  Chip,
+  Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { microcopy } from "../utils/microcopy";
 import BuyerQuestionnaire from "../components/onboarding/BuyerQuestionnaire";
 import SellerQuestionnaire from "../components/onboarding/SellerQuestionnaire";
 import type {
@@ -28,6 +31,11 @@ const Onboarding: React.FC = () => {
   const handleStartQuestionnaire = () => {
     setShowQuestionnaire(true);
   };
+
+  const isBuyer = user?.role === "buyer";
+  const onboardingCopy = isBuyer
+    ? microcopy.onboarding.buyer
+    : microcopy.onboarding.seller;
 
   const handleQuestionnaireComplete = async (
     data: BuyerOnboardingData | SellerOnboardingData

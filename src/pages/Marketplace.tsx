@@ -15,6 +15,7 @@ import {
   Snackbar,
   Paper,
   useTheme,
+  useMediaQuery,
 } from "@mui/material";
 
 import {
@@ -33,6 +34,8 @@ import type { BuyerProfile, BuyerFilters } from "../types/buyer";
 
 const Marketplace: React.FC = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const { user } = useAuth();
   const { createMatch } = useMatch();
   const [searchTerm, setSearchTerm] = useState("");

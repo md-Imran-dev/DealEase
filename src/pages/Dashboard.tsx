@@ -8,16 +8,32 @@ import {
   useTheme,
   Paper,
   LinearProgress,
+  Button,
+  Alert,
+  Chip,
 } from "@mui/material";
 import {
   TrendingUp,
   Business,
   Handshake,
   AttachMoney,
+  Explore,
+  Message,
+  Info,
 } from "@mui/icons-material";
+import { FriendlyTooltip } from "../components/common/FriendlyTooltip";
+import { microcopy } from "../utils/microcopy";
+import { useAuth } from "../contexts/AuthContext";
 
 const Dashboard: React.FC = () => {
   const theme = useTheme();
+  const { user } = useAuth();
+
+  // Determine user role and customize experience
+  const isBuyer = user?.role === "buyer";
+  const dashboardCopy = isBuyer
+    ? microcopy.dashboard.buyer
+    : microcopy.dashboard.seller;
 
   const statsCards = [
     {
@@ -89,53 +105,100 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <Box>
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+      {/* Welcome Section */}
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h3"
+          gutterBottom
+          sx={{
+            fontWeight: 700,
+            background: "linear-gradient(135deg, #667eea 0%, #f093fb 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            mb: 1,
+          }}
+        >
+          Welcome back, {user?.firstName}! 👋
+        </Typography>
+
+        <Typography
+          variant="h6"
+          color="text.secondary"
+          sx={{ mb: 3, maxWidth: 600 }}
+        >
+          {isBuyer
+            ? "Ready to discover your next great acquisition? Let's find the perfect match for your investment goals."
+            : "Your business is attracting attention! Check your matches and start building relationships with potential buyers."}
+        </Typography>
+
+        {/* Tips Chip */}
+        <Box sx={{ mb: 3 }}>
+          <Chip
+            icon={<Info />}
+            label={microcopy.onboarding.tips.complete}
+            color="primary"
+            variant="outlined"
+            sx={{
+              borderRadius: 2,
+              fontSize: "0.85rem",
+              "& .MuiChip-icon": { fontSize: "1rem" },
+            }}
+          />
+        </Box>
+      </Box>
+
       <Typography
-        variant="h4"
+        variant="h5"
         sx={{ mb: 3, fontWeight: 600, color: "text.primary" }}
       >
-        Dashboard Overview
+        Your Performance Overview 📊
       </Typography>
 
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {statsCards.map((stat, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card
-              sx={{
-                height: "100%",
-                background: `linear-gradient(135deg, ${stat.color}15 0%, ${stat.color}08 100%)`,
-                border: `1px solid ${stat.color}20`,
-                transition: "transform 0.2s",
-                "&:hover": {
-                  transform: "translateY(-4px)",
-                  boxShadow: `0 8px 32px ${stat.color}25`,
-                },
-              }}
+            <FriendlyTooltip
+              title={`Track your ${stat.title.toLowerCase()} progress and trends`}
             >
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  {stat.icon}
-                  <Box sx={{ ml: 2 }}>
-                    <Typography
-                      variant="h4"
-                      sx={{ fontWeight: 700, color: "text.primary" }}
-                    >
-                      {stat.value}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {stat.title}
-                    </Typography>
+              <Card
+                sx={{
+                  height: "100%",
+                  background: `linear-gradient(135deg, ${stat.color}15 0%, ${stat.color}08 100%)`,
+                  border: `1px solid ${stat.color}20`,
+                  transition: "transform 0.2s",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: `0 8px 32px ${stat.color}25`,
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                    {stat.icon}
+                    <Box sx={{ ml: 2 }}>
+                      <Typography
+                        variant="h4"
+                        sx={{ fontWeight: 700, color: "text.primary" }}
+                      >
+                        {stat.value}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {stat.title}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-                <Typography
-                  variant="caption"
-                  sx={{ color: stat.color, fontWeight: 500 }}
-                >
-                  {stat.change}
-                </Typography>
-              </CardContent>
-            </Card>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: stat.color, fontWeight: 500 }}
+                  >
+                    {stat.change}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </FriendlyTooltip>
           </Grid>
         ))}
       </Grid>

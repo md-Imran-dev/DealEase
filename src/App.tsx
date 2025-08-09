@@ -24,6 +24,7 @@ import Signup from "./pages/auth/Signup";
 import RoleSelection from "./pages/auth/RoleSelection";
 import Onboarding from "./pages/Onboarding";
 import { DemoLanding } from "./components/demo/DemoLanding";
+import { ResponsiveTestHelper } from "./components/common/ResponsiveTestHelper";
 
 function App() {
   try {
@@ -97,6 +98,9 @@ function App() {
             </Router>
           </MatchProvider>
         </AuthProvider>
+
+        {/* Development Helper - Remove in production */}
+        {process.env.NODE_ENV === "development" && <ResponsiveTestHelper />}
       </ThemeProvider>
     );
   } catch (error) {
