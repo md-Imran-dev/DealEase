@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -13,20 +13,22 @@ import {
   Divider,
   useTheme,
   Paper,
-  TextField,
-  InputAdornment,
   IconButton,
+  Tooltip,
 } from "@mui/material";
 import {
-  Search,
   Message as MessageIcon,
   Schedule,
   Business,
+  Add,
+  Archive,
 } from "@mui/icons-material";
 import { useAuth } from "../contexts/AuthContext";
 import { useMatch } from "../contexts/MatchContext";
 import MessagesList from "../components/messaging/MessagesList";
-import type { Match } from "../types/match";
+import ConversationFilters from "../components/messaging/ConversationFilters";
+import MessageNotification from "../components/messaging/MessageNotification";
+import type { Match, MatchFilters } from "../types/match";
 
 const Messages: React.FC = () => {
   const theme = useTheme();
@@ -34,6 +36,12 @@ const Messages: React.FC = () => {
   const { getMatchesByUser, getMessagesByMatch, sendMessage } = useMatch();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState<MatchFilters>({});
+  const [notificationMessage, setNotificationMessage] = useState<any>(null);
+  const [notificationMatch, setNotificationMatch] = useState<Match | null>(
+    null
+  );
+  const [showNotification, setShowNotification] = useState(false);
 
   // Get matches for current user
   const userMatches = useMemo(() => {
@@ -42,25 +50,60 @@ const Messages: React.FC = () => {
     return matches.filter((match) => match.status === "active");
   }, [user?.id, getMatchesByUser]);
 
-  // Filter matches based on search
+  // Filter matches based on search and filters
   const filteredMatches = useMemo(() => {
-    if (!searchTerm) return userMatches;
+    let filtered = userMatches;
 
-    return userMatches.filter((match) => {
-      const otherParty =
-        user?.id === match.buyerId ? match.seller : match.buyer;
-      const business = match.business;
-      const searchLower = searchTerm.toLowerCase();
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter((match) => {
+        const otherParty =
+          user?.id === match.buyerId ? match.seller : match.buyer;
+        const business = match.business;
+        const searchLower = searchTerm.toLowerCase();
 
-      return (
-        otherParty.firstName.toLowerCase().includes(searchLower) ||
-        otherParty.lastName.toLowerCase().includes(searchLower) ||
-        otherParty.company?.toLowerCase().includes(searchLower) ||
-        business?.name.toLowerCase().includes(searchLower) ||
-        match.lastMessage?.content.toLowerCase().includes(searchLower)
+        return (
+          otherParty.firstName.toLowerCase().includes(searchLower) ||
+          otherParty.lastName.toLowerCase().includes(searchLower) ||
+          otherParty.company?.toLowerCase().includes(searchLower) ||
+          business?.name.toLowerCase().includes(searchLower) ||
+          match.lastMessage?.content.toLowerCase().includes(searchLower)
+        );
+      });
+    }
+
+    // Apply additional filters
+    if (filters.hasUnreadMessages) {
+      filtered = filtered.filter((match) => {
+        const unreadCount =
+          user?.id === match.buyerId
+            ? match.unreadCount.buyer
+            : match.unreadCount.seller;
+        return unreadCount > 0;
+      });
+    }
+
+    if (filters.status && filters.status.length > 0) {
+      filtered = filtered.filter((match) =>
+        filters.status!.includes(match.status)
       );
-    });
-  }, [userMatches, searchTerm, user?.id]);
+    }
+
+    if (filters.dealStage && filters.dealStage.length > 0) {
+      filtered = filtered.filter(
+        (match) =>
+          match.dealStage && filters.dealStage!.includes(match.dealStage)
+      );
+    }
+
+    if (filters.lastActivityDays) {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - filters.lastActivityDays);
+      filtered = filtered.filter((match) => match.lastActivity >= cutoffDate);
+    }
+
+    return filtered;
+  }, [userMatches, searchTerm, filters, user?.id]);
 
   // Get messages for selected match
   const selectedMatchMessages = useMemo(() => {
@@ -98,10 +141,52 @@ const Messages: React.FC = () => {
     }
   };
 
-  const handleSendMessage = async (content: string) => {
+  // Simulate new message notifications
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Randomly show notification for demo purposes
+      if (Math.random() > 0.7 && filteredMatches.length > 0) {
+        const randomMatch =
+          filteredMatches[Math.floor(Math.random() * filteredMatches.length)];
+        const mockMessage = {
+          id: `msg-${Date.now()}`,
+          matchId: randomMatch.id,
+          senderId:
+            randomMatch.buyerId === user?.id
+              ? randomMatch.sellerId
+              : randomMatch.buyerId,
+          receiverId: user?.id || "",
+          content: "Hey, I wanted to follow up on our discussion...",
+          timestamp: new Date(),
+          type: "text" as const,
+        };
+
+        setNotificationMessage(mockMessage);
+        setNotificationMatch(randomMatch);
+        setShowNotification(true);
+      }
+    }, 30000); // Show demo notification every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [filteredMatches, user?.id]);
+
+  const handleSendMessage = async (content: string, attachments?: any) => {
     if (selectedMatch && user?.id) {
-      await sendMessage(selectedMatch.id, content);
+      // In a real app, you'd handle attachments properly
+      await sendMessage(selectedMatch.id, content, attachments);
     }
+  };
+
+  const handleNotificationReply = () => {
+    if (notificationMatch) {
+      setSelectedMatch(notificationMatch);
+    }
+  };
+
+  const handleCloseNotification = () => {
+    setShowNotification(false);
+    setNotificationMessage(null);
+    setNotificationMatch(null);
   };
 
   if (!user) {
@@ -132,33 +217,46 @@ const Messages: React.FC = () => {
             {/* Header */}
             <Box
               sx={{
-                p: 2,
                 borderBottom: "1px solid",
                 borderColor: theme.palette.divider,
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                Messages
-              </Typography>
+              <Box sx={{ p: 2, pb: 0 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mb: 2,
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Messages
+                  </Typography>
 
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Search conversations..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search color="action" />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 2,
-                  },
-                }}
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <Tooltip title="New conversation">
+                      <IconButton size="small" color="primary">
+                        <Add />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Archive">
+                      <IconButton size="small">
+                        <Archive />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Box>
+              </Box>
+
+              <ConversationFilters
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                filters={filters}
+                onFiltersChange={setFilters}
+                totalConversations={userMatches.length}
+                filteredConversations={filteredMatches.length}
               />
             </Box>
 
@@ -341,6 +439,15 @@ const Messages: React.FC = () => {
           )}
         </Grid>
       </Grid>
+
+      {/* Message Notifications */}
+      <MessageNotification
+        message={notificationMessage}
+        match={notificationMatch}
+        open={showNotification}
+        onClose={handleCloseNotification}
+        onReply={handleNotificationReply}
+      />
     </Box>
   );
 };

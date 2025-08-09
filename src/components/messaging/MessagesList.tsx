@@ -2,31 +2,26 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Typography,
-  TextField,
-  IconButton,
   Avatar,
   Paper,
   Stack,
   Chip,
   useTheme,
-  InputAdornment,
   Divider,
+  Badge,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
-import {
-  Send,
-  AttachFile,
-  EmojiEmotions,
-  Schedule,
-  Check,
-  DoneAll,
-} from "@mui/icons-material";
-import type { Message, Match } from "../../types/match";
+import { Business, VideoCall, Phone, MoreVert } from "@mui/icons-material";
+import type { Message, Match, MessageAttachment } from "../../types/match";
+import MessageBubble from "./MessageBubble";
+import MessageComposer from "./MessageComposer";
 
 interface MessagesListProps {
   match: Match;
   messages: Message[];
   currentUserId: string;
-  onSendMessage: (content: string) => void;
+  onSendMessage: (content: string, attachments?: MessageAttachment[]) => void;
 }
 
 const MessagesList: React.FC<MessagesListProps> = ({
@@ -37,6 +32,7 @@ const MessagesList: React.FC<MessagesListProps> = ({
 }) => {
   const theme = useTheme();
   const [newMessage, setNewMessage] = useState("");
+  const [isOnline, setIsOnline] = useState(Math.random() > 0.3); // Mock online status
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -47,17 +43,12 @@ const MessagesList: React.FC<MessagesListProps> = ({
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      onSendMessage(newMessage.trim());
-      setNewMessage("");
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
+  const handleSendMessage = (
+    content: string,
+    attachments?: MessageAttachment[]
+  ) => {
+    if (content.trim() || (attachments && attachments.length > 0)) {
+      onSendMessage(content, attachments);
     }
   };
 
@@ -92,115 +83,22 @@ const MessagesList: React.FC<MessagesListProps> = ({
 
   const renderMessage = (message: Message, index: number) => {
     const isCurrentUser = message.senderId === currentUserId;
-    const isSystem = message.type === "system";
     const showAvatar =
       !isCurrentUser &&
-      !isSystem &&
+      message.type !== "system" &&
       (index === 0 || messages[index - 1]?.senderId !== message.senderId);
 
-    if (isSystem) {
-      return (
-        <Box
-          key={message.id}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            my: 2,
-          }}
-        >
-          <Chip
-            label={message.content}
-            size="small"
-            sx={{
-              backgroundColor: theme.palette.grey[100],
-              color: theme.palette.text.secondary,
-              fontStyle: "italic",
-            }}
-          />
-        </Box>
-      );
-    }
+    const otherParty = getOtherParty();
 
     return (
-      <Box
+      <MessageBubble
         key={message.id}
-        sx={{
-          display: "flex",
-          justifyContent: isCurrentUser ? "flex-end" : "flex-start",
-          mb: 1,
-          alignItems: "flex-end",
-          gap: 1,
-        }}
-      >
-        {showAvatar && !isCurrentUser && (
-          <Avatar
-            src={getOtherParty().profilePicture}
-            sx={{
-              width: 32,
-              height: 32,
-              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-            }}
-          >
-            {getOtherParty().avatar}
-          </Avatar>
-        )}
-
-        {!showAvatar && !isCurrentUser && (
-          <Box sx={{ width: 32 }} /> // Spacer
-        )}
-
-        <Paper
-          sx={{
-            maxWidth: "70%",
-            p: 1.5,
-            borderRadius: 2,
-            backgroundColor: isCurrentUser
-              ? theme.palette.primary.main
-              : theme.palette.grey[100],
-            color: isCurrentUser
-              ? theme.palette.primary.contrastText
-              : theme.palette.text.primary,
-            borderTopLeftRadius: !isCurrentUser && showAvatar ? 2 : 12,
-            borderTopRightRadius: isCurrentUser ? 2 : 12,
-            borderBottomLeftRadius: 12,
-            borderBottomRightRadius: 12,
-          }}
-        >
-          <Typography variant="body2" sx={{ lineHeight: 1.4 }}>
-            {message.content}
-          </Typography>
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mt: 0.5,
-              gap: 1,
-            }}
-          >
-            <Typography
-              variant="caption"
-              sx={{
-                opacity: 0.7,
-                fontSize: "0.7rem",
-              }}
-            >
-              {formatMessageTime(message.timestamp)}
-            </Typography>
-
-            {isCurrentUser && (
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                {message.readAt ? (
-                  <DoneAll sx={{ fontSize: 12, opacity: 0.7 }} />
-                ) : (
-                  <Check sx={{ fontSize: 12, opacity: 0.7 }} />
-                )}
-              </Box>
-            )}
-          </Box>
-        </Paper>
-      </Box>
+        message={message}
+        isCurrentUser={isCurrentUser}
+        showAvatar={showAvatar}
+        senderAvatar={otherParty.avatar}
+        senderName={`${otherParty.firstName} ${otherParty.lastName}`}
+      />
     );
   };
 
@@ -217,31 +115,75 @@ const MessagesList: React.FC<MessagesListProps> = ({
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Avatar
-            src={getOtherParty().profilePicture}
-            sx={{
-              width: 40,
-              height: 40,
-              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+          <Badge
+            badgeContent=""
+            color="success"
+            variant="dot"
+            invisible={!isOnline}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right",
             }}
           >
-            {getOtherParty().avatar}
-          </Avatar>
+            <Avatar
+              src={getOtherParty().profilePicture}
+              sx={{
+                width: 40,
+                height: 40,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              }}
+            >
+              {getOtherParty().avatar}
+            </Avatar>
+          </Badge>
 
-          <Box>
+          <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               {getOtherParty().firstName} {getOtherParty().lastName}
             </Typography>
-            {getOtherParty().company && (
-              <Typography variant="body2" color="text.secondary">
-                {getOtherParty().title} at {getOtherParty().company}
-              </Typography>
-            )}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {getOtherParty().company && (
+                <Typography variant="body2" color="text.secondary">
+                  {getOtherParty().title ? `${getOtherParty().title} at ` : ""}
+                  {getOtherParty().company}
+                </Typography>
+              )}
+              {isOnline && (
+                <Chip
+                  label="Online"
+                  size="small"
+                  color="success"
+                  variant="outlined"
+                  sx={{ height: 20, fontSize: "0.7rem" }}
+                />
+              )}
+            </Box>
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 1 }}>
+            <Tooltip title="Video call">
+              <IconButton size="small" color="primary">
+                <VideoCall />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Voice call">
+              <IconButton size="small" color="primary">
+                <Phone />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="More options">
+              <IconButton size="small">
+                <MoreVert />
+              </IconButton>
+            </Tooltip>
           </Box>
 
           {match.business && (
-            <Box sx={{ ml: "auto" }}>
+            <Box>
               <Chip
+                icon={<Business />}
                 label={match.business.name}
                 size="small"
                 color="primary"
@@ -267,67 +209,13 @@ const MessagesList: React.FC<MessagesListProps> = ({
         <div ref={messagesEndRef} />
       </Box>
 
-      {/* Message Input */}
-      <Paper
-        sx={{
-          p: 2,
-          borderRadius: 0,
-          borderTop: "1px solid",
-          borderColor: theme.palette.divider,
-        }}
-      >
-        <TextField
-          fullWidth
-          multiline
-          maxRows={3}
-          placeholder="Type a message..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <IconButton size="small" edge="start">
-                  <EmojiEmotions />
-                </IconButton>
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton size="small">
-                  <AttachFile />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  onClick={handleSendMessage}
-                  disabled={!newMessage.trim()}
-                  edge="end"
-                  sx={{
-                    backgroundColor: newMessage.trim()
-                      ? theme.palette.primary.main
-                      : "transparent",
-                    color: newMessage.trim()
-                      ? theme.palette.primary.contrastText
-                      : theme.palette.text.disabled,
-                    "&:hover": {
-                      backgroundColor: newMessage.trim()
-                        ? theme.palette.primary.dark
-                        : "transparent",
-                    },
-                  }}
-                >
-                  <Send />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 3,
-            },
-          }}
-        />
-      </Paper>
+      {/* Message Composer */}
+      <MessageComposer
+        value={newMessage}
+        onChange={setNewMessage}
+        onSendMessage={handleSendMessage}
+        placeholder="Type a message..."
+      />
     </Box>
   );
 };

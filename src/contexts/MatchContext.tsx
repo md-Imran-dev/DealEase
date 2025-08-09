@@ -302,6 +302,7 @@ export const MatchProvider: React.FC<{ children: React.ReactNode }> = ({
   const sendMessage = async (
     matchId: string,
     content: string,
+    attachments?: any,
     type: Message["type"] = "text"
   ): Promise<void> => {
     try {
@@ -312,7 +313,8 @@ export const MatchProvider: React.FC<{ children: React.ReactNode }> = ({
         receiverId: "other-user", // Would be determined from match
         content,
         timestamp: new Date(),
-        type,
+        type: attachments && attachments.length > 0 ? "file" : type,
+        attachments: attachments || undefined,
       };
 
       dispatch({ type: "ADD_MESSAGE", payload: newMessage });
