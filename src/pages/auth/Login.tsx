@@ -16,7 +16,12 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
-import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
+import {
+  Link as RouterLink,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import type { LoginCredentials } from "../../types/auth";
 
@@ -24,7 +29,11 @@ const Login: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { login, isLoading, error, clearError } = useAuth();
+
+  // Check if user came from demo landing
+  const isFromDemo = searchParams.get("demo") === "true";
 
   const [formData, setFormData] = useState<LoginCredentials>({
     email: "",
@@ -178,6 +187,19 @@ const Login: React.FC = () => {
                 </Alert>
               )}
 
+              {isFromDemo && (
+                <Alert severity="info" sx={{ mb: 3 }}>
+                  <Typography variant="body2">
+                    <strong>Demo Mode:</strong> Use the credentials below to
+                    experience the platform:
+                    <br />
+                    <strong>Buyer:</strong> buyer@demo.com / password123
+                    <br />
+                    <strong>Seller:</strong> seller@demo.com / password123
+                  </Typography>
+                </Alert>
+              )}
+
               <form onSubmit={handleSubmit}>
                 <Stack spacing={3}>
                   <TextField
@@ -303,6 +325,27 @@ const Login: React.FC = () => {
                   OR TRY DEMO
                 </Typography>
               </Divider>
+
+              <Button
+                variant="outlined"
+                size="large"
+                fullWidth
+                onClick={() => navigate("/demo")}
+                sx={{
+                  borderRadius: 3,
+                  py: 1.5,
+                  mb: 2,
+                  borderColor: theme.palette.primary.main,
+                  color: theme.palette.primary.main,
+                  fontWeight: 600,
+                  "&:hover": {
+                    backgroundColor: `${theme.palette.primary.main}10`,
+                    borderColor: theme.palette.primary.dark,
+                  },
+                }}
+              >
+                Explore Full Demo Experience
+              </Button>
 
               {/* Demo Login Buttons */}
               <Stack spacing={2}>

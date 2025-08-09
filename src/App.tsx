@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -24,6 +23,7 @@ import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import RoleSelection from "./pages/auth/RoleSelection";
 import Onboarding from "./pages/Onboarding";
+import { DemoLanding } from "./components/demo/DemoLanding";
 
 function App() {
   try {
@@ -34,6 +34,9 @@ function App() {
           <MatchProvider>
             <Router>
               <Routes>
+                {/* Public Routes */}
+                <Route path="/demo" element={<DemoLanding />} />
+
                 {/* Authentication Routes */}
                 <Route path="/auth/login" element={<Login />} />
                 <Route path="/auth/signup" element={<Signup />} />

@@ -22,11 +22,14 @@ import {
   Logout,
   Settings,
   Person,
+  Science,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useMatch } from "../contexts/MatchContext";
 import { drawerWidth } from "./Sidebar";
+import { DemoModePanel } from "./demo/DemoModePanel";
+import { isDemo } from "../utils/demoMode";
 
 interface TopBarProps {
   onMobileMenuToggle: () => void;
@@ -41,6 +44,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationAnchorEl, setNotificationAnchorEl] =
     useState<null | HTMLElement>(null);
+  const [demoModeOpen, setDemoModeOpen] = useState(false);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -147,6 +151,17 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
           <Settings fontSize="small" />
         </ListItemIcon>
         <ListItemText primary="Settings" />
+      </MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleProfileMenuClose();
+          setDemoModeOpen(true);
+        }}
+      >
+        <ListItemIcon>
+          <Science fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary="Demo Mode" />
       </MenuItem>
       <Divider />
       <MenuItem
@@ -338,6 +353,10 @@ const TopBar: React.FC<TopBarProps> = ({ onMobileMenuToggle }) => {
       </AppBar>
       {renderProfileMenu}
       {renderNotificationMenu}
+      <DemoModePanel
+        open={demoModeOpen}
+        onClose={() => setDemoModeOpen(false)}
+      />
     </>
   );
 };
