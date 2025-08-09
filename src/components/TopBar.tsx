@@ -18,7 +18,6 @@ import {
 import {
   Menu as MenuIcon,
   Notifications as NotificationsIcon,
-  AccountCircle,
   Logout,
   Settings,
   Person,
@@ -29,7 +28,6 @@ import { useAuth } from "../contexts/AuthContext";
 import { useMatch } from "../contexts/MatchContext";
 import { drawerWidth } from "./Sidebar";
 import { DemoModePanel } from "./demo/DemoModePanel";
-import { isDemo } from "../utils/demoMode";
 import { FriendlyTooltip } from "./common/FriendlyTooltip";
 
 interface TopBarProps {

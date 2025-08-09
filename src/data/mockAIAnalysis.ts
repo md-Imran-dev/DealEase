@@ -2,19 +2,19 @@ import type { AIDocumentAnalysis, FinancialHighlight, RiskFlag, Recommendation }
 
 export const generateMockAIAnalysis = (documentName: string, documentType: string): AIDocumentAnalysis => {
   const analysisId = `analysis-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  
+
   // Generate different analysis based on document type
   const isCashFlow = documentName.toLowerCase().includes('cash') || documentType === 'cash-flow-statement';
   const isIncomeStatement = documentName.toLowerCase().includes('income') || documentType === 'income-statement';
   const isBalanceSheet = documentName.toLowerCase().includes('balance') || documentType === 'balance-sheet';
-  
+
   return {
     id: analysisId,
     documentId: `doc-${Date.now()}`,
     documentName,
     analysisDate: new Date(),
     analysisStatus: 'completed',
-    
+
     summary: {
       overview: generateOverview(documentName, documentType),
       keyMetrics: generateKeyMetrics(documentType),
@@ -22,16 +22,16 @@ export const generateMockAIAnalysis = (documentName: string, documentType: strin
       comparisons: generateComparisons(documentType),
       conclusion: generateConclusion(documentType),
     },
-    
+
     highlights: generateHighlights(documentType),
     risks: generateRisks(documentType),
     recommendations: generateRecommendations(documentType),
-    
+
     confidence: Math.floor(Math.random() * 15) + 85, // 85-100%
     processingTime: Math.floor(Math.random() * 30) + 15, // 15-45 seconds
     modelVersion: "FinanceAI v2.1",
     analysisType: documentType as any,
-    
+
     approved: false,
   };
 };
@@ -44,7 +44,7 @@ const generateOverview = (documentName: string, documentType: string): string =>
     'financial-statements': "Comprehensive financial analysis indicates a well-managed business with consistent performance across key financial metrics. The company shows balanced growth with attention to profitability and cash management.",
     'default': "Financial document analysis reveals key insights into the company's operational performance, financial health, and strategic positioning within its market segment."
   };
-  
+
   return templates[documentType as keyof typeof templates] || templates.default;
 };
 
@@ -88,6 +88,7 @@ const generateKeyMetrics = (documentType: string) => {
     baseMetrics.push({
       name: "Operating Cash Flow",
       value: `$${(Math.random() * 500 + 200).toFixed(0)}K`,
+      unit: "$",
       period: "TTM",
       change: {
         value: Math.floor(Math.random() * 25) + 5,
@@ -159,7 +160,7 @@ const generateConclusion = (documentType: string): string => {
     "The company demonstrates solid financial performance with manageable risks and clear opportunities for value creation under new ownership.",
     "Financial metrics suggest a stable business with good operational efficiency and strategic positioning for continued growth and profitability."
   ];
-  
+
   return conclusions[Math.floor(Math.random() * conclusions.length)];
 };
 

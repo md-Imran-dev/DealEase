@@ -100,7 +100,7 @@ function App() {
         </AuthProvider>
 
         {/* Development Helper - Remove in production */}
-        {process.env.NODE_ENV === "development" && <ResponsiveTestHelper />}
+        {import.meta.env.DEV && <ResponsiveTestHelper />}
       </ThemeProvider>
     );
   } catch (error) {

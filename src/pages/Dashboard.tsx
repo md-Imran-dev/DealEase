@@ -2,14 +2,11 @@ import React from "react";
 import {
   Box,
   Typography,
-  Grid,
   Card,
   CardContent,
   useTheme,
   Paper,
   LinearProgress,
-  Button,
-  Alert,
   Chip,
 } from "@mui/material";
 import {
@@ -17,8 +14,6 @@ import {
   Business,
   Handshake,
   AttachMoney,
-  Explore,
-  Message,
   Info,
 } from "@mui/icons-material";
 import { FriendlyTooltip } from "../components/common/FriendlyTooltip";
@@ -157,9 +152,18 @@ const Dashboard: React.FC = () => {
       </Typography>
 
       {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Box
+        display="grid"
+        gridTemplateColumns={{
+          xs: "1fr",
+          sm: "repeat(2, 1fr)",
+          md: "repeat(4, 1fr)",
+        }}
+        gap={3}
+        sx={{ mb: 4 }}
+      >
         {statsCards.map((stat, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Box key={index}>
             <FriendlyTooltip
               title={`Track your ${stat.title.toLowerCase()} progress and trends`}
             >
@@ -199,13 +203,17 @@ const Dashboard: React.FC = () => {
                 </CardContent>
               </Card>
             </FriendlyTooltip>
-          </Grid>
+          </Box>
         ))}
-      </Grid>
+      </Box>
 
-      <Grid container spacing={3}>
+      <Box
+        display="grid"
+        gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
+        gap={3}
+      >
         {/* Recent Activity */}
-        <Grid item xs={12} md={6}>
+        <Box>
           <Paper
             sx={{
               p: 3,
@@ -241,10 +249,10 @@ const Dashboard: React.FC = () => {
               ))}
             </Box>
           </Paper>
-        </Grid>
+        </Box>
 
         {/* Progress Overview */}
-        <Grid item xs={12} md={6}>
+        <Box>
           <Paper
             sx={{
               p: 3,
@@ -301,8 +309,8 @@ const Dashboard: React.FC = () => {
               ))}
             </Box>
           </Paper>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 };
