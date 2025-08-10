@@ -125,9 +125,6 @@ const Login: React.FC = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "red",
-        p: 2,
-        border: "1px solid red",
       }}
     >
       <Container component="main" maxWidth="sm">

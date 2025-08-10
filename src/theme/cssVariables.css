@@ -1,0 +1,163 @@
+/**
+ * DealEase CSS Custom Properties (CSS Variables)
+ * 
+ * This file provides CSS custom properties for the DealEase color palette.
+ * Use these variables in CSS, SCSS, or styled-components for consistent theming.
+ * 
+ * Usage examples:
+ * - CSS: background-color: var(--de-primary);
+ * - styled-components: background: ${props => 'var(--de-primary)'};
+ * - SCSS: background-color: var(--de-primary);
+ */
+
+:root {
+  /* === PRIMARY COLORS === */
+  --de-primary-dark: #0A2463;      /* Royal Blue - Headers, important elements */
+  --de-primary: #3E92CC;           /* Celestial Blue - Main brand color */
+  --de-primary-light: #7DC6E6;     /* Tint of Celestial Blue - Hover states */
+
+  /* === BACKGROUND COLORS === */
+  --de-background: #FFFAFF;        /* Ghost White - Main page background */
+  --de-surface: #FFFFFF;           /* Pure White - Cards and surfaces */
+
+  /* === ACCENT COLORS === */
+  --de-accent: #D8315B;            /* Cerise - CTAs and highlights */
+  --de-accent-light: #F57A95;      /* Tint of Cerise - Hover states */
+
+  /* === TEXT COLORS === */
+  --de-text-primary: #1E1B18;      /* Eerie Black - Main text */
+  --de-text-secondary: #6B7280;    /* Secondary Gray - Muted text */
+  --de-text-on-primary: #FFFFFF;   /* White text for dark backgrounds */
+
+  /* === UTILITY COLORS === */
+  --de-card-shadow: #E5E7EB;       /* Card borders and dividers */
+  --de-success: #5CB85C;           /* Success Green */
+  --de-warning: #FFD166;           /* Warning Yellow */
+  --de-error: #D8315B;             /* Error (same as accent) */
+  --de-info: #3E92CC;              /* Info (same as primary) */
+
+  /* === SEMANTIC VARIATIONS === */
+  --de-success-light: #7BC97B;
+  --de-success-dark: #4A9A4A;
+  --de-warning-light: #FFE085;
+  --de-warning-dark: #E6BC4D;
+  --de-error-light: #F57A95;
+  --de-error-dark: #B8264A;
+  --de-info-light: #7DC6E6;
+  --de-info-dark: #0A2463;
+
+  /* === OPACITY VARIATIONS === */
+  --de-primary-08: #3E92CC14;      /* 8% opacity */
+  --de-primary-12: #3E92CC1F;      /* 12% opacity */
+  --de-primary-16: #3E92CC29;      /* 16% opacity */
+  --de-accent-08: #D8315B14;       /* 8% opacity */
+  --de-accent-12: #D8315B1F;       /* 12% opacity */
+  --de-accent-16: #D8315B29;       /* 16% opacity */
+
+  /* === SPACING AND SIZING === */
+  --de-border-radius: 12px;
+  --de-border-radius-small: 8px;
+  --de-border-radius-large: 16px;
+  --de-border-width: 1px;
+  --de-border-width-thick: 2px;
+
+  /* === SHADOWS === */
+  --de-shadow-sm: 0px 1px 3px rgba(0, 0, 0, 0.05);
+  --de-shadow-md: 0px 4px 12px rgba(0, 0, 0, 0.05);
+  --de-shadow-lg: 0px 8px 24px rgba(0, 0, 0, 0.12);
+  --de-shadow-hover: 0px 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* === DARK MODE VARIATIONS === */
+[data-theme="dark"] {
+  /* === BACKGROUND COLORS === */
+  --de-background: #0F0F0F;        /* Very dark background */
+  --de-surface: #1A1A1A;           /* Dark surface for cards */
+
+  /* === TEXT COLORS === */
+  --de-text-primary: #F5F5F5;      /* Light text for dark backgrounds */
+  --de-text-secondary: #B0B0B0;    /* Muted light text */
+
+  /* === UTILITY COLORS === */
+  --de-card-shadow: #2A2A2A;       /* Darker borders/dividers */
+
+  /* === SHADOWS (adjusted for dark mode) === */
+  --de-shadow-sm: 0px 1px 3px rgba(255, 255, 255, 0.05);
+  --de-shadow-md: 0px 4px 12px rgba(255, 255, 255, 0.05);
+  --de-shadow-lg: 0px 8px 24px rgba(255, 255, 255, 0.12);
+  --de-shadow-hover: 0px 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+/* === UTILITY CLASSES === */
+
+/* Background Classes */
+.bg-primary { background-color: var(--de-primary); }
+.bg-primary-dark { background-color: var(--de-primary-dark); }
+.bg-primary-light { background-color: var(--de-primary-light); }
+.bg-accent { background-color: var(--de-accent); }
+.bg-accent-light { background-color: var(--de-accent-light); }
+.bg-surface { background-color: var(--de-surface); }
+.bg-background { background-color: var(--de-background); }
+
+/* Text Color Classes */
+.text-primary { color: var(--de-text-primary); }
+.text-secondary { color: var(--de-text-secondary); }
+.text-on-primary { color: var(--de-text-on-primary); }
+.text-brand-primary { color: var(--de-primary); }
+.text-brand-dark { color: var(--de-primary-dark); }
+.text-accent { color: var(--de-accent); }
+
+/* Border Classes */
+.border-primary { border-color: var(--de-primary); }
+.border-card { border-color: var(--de-card-shadow); }
+.border-accent { border-color: var(--de-accent); }
+
+/* Status Classes */
+.text-success { color: var(--de-success); }
+.text-warning { color: var(--de-warning); }
+.text-error { color: var(--de-error); }
+.text-info { color: var(--de-info); }
+
+.bg-success { background-color: var(--de-success); }
+.bg-warning { background-color: var(--de-warning); }
+.bg-error { background-color: var(--de-error); }
+.bg-info { background-color: var(--de-info); }
+
+/* === EXAMPLE USAGE IN CSS === */
+/*
+.button-primary {
+  background-color: var(--de-primary);
+  color: var(--de-text-on-primary);
+  border: var(--de-border-width) solid var(--de-primary);
+  border-radius: var(--de-border-radius);
+  box-shadow: var(--de-shadow-sm);
+  transition: all 0.2s ease-in-out;
+}
+
+.button-primary:hover {
+  background-color: var(--de-primary-dark);
+  box-shadow: var(--de-shadow-hover);
+  transform: translateY(-1px);
+}
+
+.card {
+  background-color: var(--de-surface);
+  border: var(--de-border-width) solid var(--de-card-shadow);
+  border-radius: var(--de-border-radius-large);
+  box-shadow: var(--de-shadow-md);
+  color: var(--de-text-primary);
+}
+
+.input-field {
+  border: var(--de-border-width-thick) solid var(--de-card-shadow);
+  border-radius: var(--de-border-radius);
+  background-color: var(--de-surface);
+  color: var(--de-text-primary);
+}
+
+.input-field:focus {
+  border-color: var(--de-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--de-primary-08);
+}
+*/
