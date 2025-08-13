@@ -28,10 +28,13 @@ import Settings from "./pages/Settings";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
-import RoleSelection from "./pages/auth/RoleSelection";
+import RoleSelection from "./pages/auth/RoleSelection-Simple";
 import Onboarding from "./pages/Onboarding";
 import { DemoLanding } from "./components/demo/DemoLanding";
 import { ResponsiveTestHelper } from "./components/common/ResponsiveTestHelper";
+import AppwriteTest from "./components/AppwriteTest";
+import SimpleTest from "./components/SimpleTest";
+import DebugTest from "./components/DebugTest";
 
 function App() {
   const { checkAuthStatus } = useUserStore();
@@ -41,37 +44,19 @@ function App() {
   const { loadMessages, loadNotifications } = useChatStore();
   const { loadDeals } = useDealStore();
 
-  // Initialize stores on app startup
+  // Initialize stores on app startup - Only check auth status for now
   React.useEffect(() => {
     const initializeStores = async () => {
       try {
-        // Initialize auth first
+        // Only initialize auth - skip other stores until they're updated for Appwrite
         await checkAuthStatus();
-
-        // Then load all other data in parallel
-        await Promise.all([
-          loadBuyers(),
-          loadSellers(),
-          loadMatches(),
-          loadMessages(),
-          loadNotifications(),
-          loadDeals(),
-        ]);
       } catch (error) {
-        console.error("Failed to initialize stores:", error);
+        console.error("Failed to initialize auth:", error);
       }
     };
 
     initializeStores();
-  }, [
-    checkAuthStatus,
-    loadBuyers,
-    loadSellers,
-    loadMatches,
-    loadMessages,
-    loadNotifications,
-    loadDeals,
-  ]);
+  }, [checkAuthStatus]);
 
   try {
     return (
@@ -81,26 +66,47 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/demo" element={<DemoLanding />} />
+            <Route path="/simple-test" element={<SimpleTest />} />
+            <Route path="/appwrite-test" element={<AppwriteTest />} />
+            <Route path="/debug" element={<DebugTest />} />
+            <Route
+              path="/test"
+              element={
+                <div style={{ padding: "20px", fontSize: "24px" }}>
+                  ✅ Basic React Routing Works!
+                </div>
+              }
+            />
 
             {/* Authentication Routes */}
             <Route path="/auth/login" element={<Login />} />
             <Route path="/auth/signup" element={<Signup />} />
-            <Route
-              path="/auth/role-selection"
-              element={
-                <ProtectedRoute requireOnboarding={false}>
-                  <RoleSelection />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/auth/role-selection" element={<RoleSelection />} />
 
             {/* Onboarding Route */}
             <Route
               path="/onboarding"
               element={
-                <ProtectedRoute requireOnboarding={false}>
-                  <Onboarding />
-                </ProtectedRoute>
+                <div
+                  style={{
+                    padding: "20px",
+                    fontSize: "24px",
+                    textAlign: "center",
+                  }}
+                >
+                  🎉 Onboarding Page Works!
+                  <br />
+                  <div style={{ marginTop: "20px", fontSize: "18px" }}>
+                    Selected Role:{" "}
+                    {localStorage.getItem("selectedRole") || "Not found"}
+                  </div>
+                  <button
+                    onClick={() => (window.location.href = "/")}
+                    style={{ marginTop: "20px", padding: "10px 20px" }}
+                  >
+                    Go to Dashboard
+                  </button>
+                </div>
               }
             />
 

@@ -986,6 +986,11 @@ ansi-styles@^4.1.0:
   dependencies:
     color-convert "^2.0.1"
 
+appwrite@^18.2.0:
+  version "18.2.0"
+  resolved "https://registry.yarnpkg.com/appwrite/-/appwrite-18.2.0.tgz#338ff54aa33d64edb823f239967aac64af1678ac"
+  integrity sha512-g7pQpsxqR7+amEIaQLXMN4XzdQKenTHnGdA4s7UUJdZufhlHdJby8895h8z893+S0XipeHZhi0wpxYA2An95Rg==
+
 argparse@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz"
@@ -1458,7 +1463,7 @@ ignore@^7.0.0:
 
 immer@^10.1.1:
   version "10.1.1"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-10.1.1.tgz#206f344ea372d8ea176891545ee53ccc062db7bc"
+  resolved "https://registry.npmjs.org/immer/-/immer-10.1.1.tgz"
   integrity sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==
 
 import-fresh@^3.2.1:
@@ -2044,5 +2049,5 @@ yocto-queue@^0.1.0:
 
 zustand@^5.0.7:
   version "5.0.7"
-  resolved "https://registry.yarnpkg.com/zustand/-/zustand-5.0.7.tgz#e325364e82c992a84bf386d8445aa7f180c450dc"
+  resolved "https://registry.npmjs.org/zustand/-/zustand-5.0.7.tgz"
   integrity sha512-Ot6uqHDW/O2VdYsKLLU8GQu8sCOM1LcoE8RwvLv9uuRT9s6SOHCKs0ZEOhxg+I1Ld+A1Q5lwx+UlKXXUoCZITg==

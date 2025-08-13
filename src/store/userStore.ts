@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { User, LoginCredentials, SignupData } from '../types/auth';
+import { authService, databaseService } from '../lib/Appwrite';
 
 /**
  * UserStore - Handles user authentication, session management, and user profile data
@@ -54,41 +55,49 @@ export const useUserStore = create<UserState>()(
                 });
 
                 try {
-                    // Simulate API call delay
-                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    // Authenticate with Appwrite
+                    await authService.login(credentials.email, credentials.password);
 
-                    // Mock user data - in real app, this would come from your backend
-                    const isSeller = credentials.email === "seller@demo.com";
-                    const mockUser: User = {
-                        id: "1",
-                        email: credentials.email,
-                        firstName: "John",
-                        lastName: "Doe",
-                        role: isSeller ? "seller" : "buyer",
-                        company: isSeller ? "DoeFlow Solutions" : "Growth Capital Partners",
-                        avatar: "JD",
-                        phone: "+1 (555) 123-4567",
-                        isOnboarded: true,
-                        createdAt: new Date().toISOString(),
+                    // Get the current user from Appwrite
+                    const appwriteUser = await authService.getCurrentUser();
+
+                    // Try to get user profile from database
+                    let userProfile = null;
+                    try {
+                        userProfile = await databaseService.getUserProfile(appwriteUser.$id);
+                    } catch (profileError) {
+                        // Profile doesn't exist yet - this is normal for new users
+                        console.log("User profile not found, will be created during onboarding");
+                    }
+
+                    // Create user object
+                    const user: User = {
+                        id: appwriteUser.$id,
+                        email: appwriteUser.email,
+                        firstName: userProfile?.firstName || appwriteUser.name?.split(' ')[0] || '',
+                        lastName: userProfile?.lastName || appwriteUser.name?.split(' ')[1] || '',
+                        role: userProfile?.role || null,
+                        company: userProfile?.company || '',
+                        avatar: userProfile?.firstName?.[0] || appwriteUser.name?.[0] || 'U',
+                        phone: userProfile?.phone || '',
+                        isOnboarded: !!userProfile?.role, // User is onboarded if they have a role
+                        createdAt: appwriteUser.$createdAt,
                         lastLoginAt: new Date().toISOString(),
                     };
 
-                    // Store in localStorage (in real app, use secure token storage)
-                    localStorage.setItem("dealease_user", JSON.stringify(mockUser));
-                    localStorage.setItem("dealease_token", "mock_jwt_token");
-
                     set((state) => {
-                        state.user = mockUser;
+                        state.user = user;
                         state.isAuthenticated = true;
                         state.isLoading = false;
                         state.error = null;
                     });
                 } catch (error) {
+                    console.error('Login error:', error);
                     set((state) => {
                         state.user = null;
                         state.isAuthenticated = false;
                         state.isLoading = false;
-                        state.error = "Invalid email or password";
+                        state.error = error instanceof Error ? error.message : "Login failed";
                     });
                     throw error;
                 }
@@ -138,10 +147,15 @@ export const useUserStore = create<UserState>()(
                 }
             },
 
-            logout: () => {
-                localStorage.removeItem("dealease_user");
-                localStorage.removeItem("dealease_token");
+            logout: async () => {
+                try {
+                    // Logout from Appwrite
+                    await authService.logout();
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
 
+                // Clear local state regardless of Appwrite logout result
                 set((state) => {
                     state.user = null;
                     state.isAuthenticated = false;
@@ -178,19 +192,35 @@ export const useUserStore = create<UserState>()(
                 if (!currentUser) return;
 
                 try {
-                    // Simulate API call delay
-                    await new Promise((resolve) => setTimeout(resolve, 500));
+                    // Create or update user profile in Appwrite database
+                    const profileData = {
+                        userId: currentUser.id,
+                        role,
+                        firstName: currentUser.firstName,
+                        lastName: currentUser.lastName,
+                        company: currentUser.company || '',
+                        phone: currentUser.phone || '',
+                        location: currentUser.location || '',
+                    };
 
-                    const updatedUser = { ...currentUser, role };
-                    localStorage.setItem("dealease_user", JSON.stringify(updatedUser));
+                    // Try to create user profile (this will work for new users)
+                    try {
+                        await databaseService.createUserProfile(currentUser.id, profileData);
+                    } catch (error) {
+                        // If profile already exists, update it
+                        await databaseService.updateUserProfile(currentUser.id, profileData);
+                    }
 
+                    // Update local state
                     set((state) => {
                         if (state.user) {
                             state.user.role = role;
+                            state.user.isOnboarded = true; // User is now onboarded with a role
                         }
                         state.error = null;
                     });
                 } catch (error) {
+                    console.error('Update role error:', error);
                     set((state) => {
                         state.error = "Failed to update role";
                     });
@@ -242,12 +272,32 @@ export const useUserStore = create<UserState>()(
                 });
 
                 try {
-                    const userData = localStorage.getItem("dealease_user");
-                    const token = localStorage.getItem("dealease_token");
+                    // Check if there's an active Appwrite session
+                    const appwriteUser = await authService.getCurrentUser();
 
-                    if (userData && token) {
-                        const user = JSON.parse(userData);
-                        // In a real app, you'd validate the token with your backend
+                    if (appwriteUser) {
+                        // User is authenticated, get their profile
+                        let userProfile = null;
+                        try {
+                            userProfile = await databaseService.getUserProfile(appwriteUser.$id);
+                        } catch (profileError) {
+                            console.log("User profile not found");
+                        }
+
+                        const user: User = {
+                            id: appwriteUser.$id,
+                            email: appwriteUser.email,
+                            firstName: userProfile?.firstName || appwriteUser.name?.split(' ')[0] || '',
+                            lastName: userProfile?.lastName || appwriteUser.name?.split(' ')[1] || '',
+                            role: userProfile?.role || null,
+                            company: userProfile?.company || '',
+                            avatar: userProfile?.firstName?.[0] || appwriteUser.name?.[0] || 'U',
+                            phone: userProfile?.phone || '',
+                            isOnboarded: !!userProfile?.role,
+                            createdAt: appwriteUser.$createdAt,
+                            lastLoginAt: new Date().toISOString(),
+                        };
+
                         set((state) => {
                             state.user = user;
                             state.isAuthenticated = true;
@@ -255,6 +305,7 @@ export const useUserStore = create<UserState>()(
                             state.error = null;
                         });
                     } else {
+                        // No active session
                         set((state) => {
                             state.user = null;
                             state.isAuthenticated = false;
@@ -263,7 +314,8 @@ export const useUserStore = create<UserState>()(
                         });
                     }
                 } catch (error) {
-                    console.error("Auth check failed:", error);
+                    // No active session or error
+                    console.log("No active session");
                     set((state) => {
                         state.user = null;
                         state.isAuthenticated = false;

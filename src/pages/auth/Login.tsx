@@ -24,6 +24,7 @@ import {
 } from "react-router-dom";
 import { useUserStore } from "../../store/userStore";
 import type { LoginCredentials } from "../../types/auth";
+import { authService } from "../../lib/Appwrite";
 
 const Login: React.FC = () => {
   const theme = useTheme();
@@ -34,6 +35,17 @@ const Login: React.FC = () => {
 
   // Check if user came from demo landing
   const isFromDemo = searchParams.get("demo") === "true";
+
+  // Clear active session function
+  const clearSession = async () => {
+    try {
+      await authService.logout();
+      clearError();
+      console.log("Session cleared successfully");
+    } catch (error) {
+      console.log("Session cleared or no active session");
+    }
+  };
 
   const [formData, setFormData] = useState<LoginCredentials>({
     email: "",
@@ -183,6 +195,17 @@ const Login: React.FC = () => {
               {error && (
                 <Alert severity="error" sx={{ mb: 3 }}>
                   {error}
+                  {error.includes("session is active") && (
+                    <Button
+                      size="small"
+                      onClick={clearSession}
+                      sx={{ mt: 1, ml: 1 }}
+                      variant="outlined"
+                      color="error"
+                    >
+                      Clear Session
+                    </Button>
+                  )}
                 </Alert>
               )}
 
