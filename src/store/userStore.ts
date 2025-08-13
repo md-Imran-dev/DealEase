@@ -110,25 +110,54 @@ export const useUserStore = create<UserState>()(
                 });
 
                 try {
-                    // Simulate API call delay
-                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    // Create account with Appwrite
+                    const fullName = `${data.firstName} ${data.lastName}`;
+                    await authService.createAccount(data.email, data.password, fullName);
 
-                    // Mock user creation - in real app, this would be handled by your backend
+                    // Get the created user from Appwrite
+                    const appwriteUser = await authService.getCurrentUser();
+
+                    // Create user object
                     const newUser: User = {
-                        id: Date.now().toString(),
-                        email: data.email,
+                        id: appwriteUser.$id,
+                        email: appwriteUser.email,
                         firstName: data.firstName,
                         lastName: data.lastName,
                         role: data.role,
-                        company: data.company,
+                        company: data.company || '',
                         avatar: `${data.firstName.charAt(0)}${data.lastName.charAt(0)}`,
-                        isOnboarded: false, // New users need onboarding
-                        createdAt: new Date().toISOString(),
+                        phone: '',
+                        isOnboarded: data.role ? true : false, // User is onboarded if they selected a role during signup
+                        createdAt: appwriteUser.$createdAt,
                         lastLoginAt: new Date().toISOString(),
                     };
 
-                    localStorage.setItem("dealease_user", JSON.stringify(newUser));
-                    localStorage.setItem("dealease_token", "mock_jwt_token");
+                    // If user selected a role during signup, create their profile in database
+                    if (data.role) {
+                        try {
+                            const profileData = {
+                                userId: appwriteUser.$id,
+                                role: data.role,
+                                firstName: data.firstName,
+                                lastName: data.lastName,
+                                company: data.company || '',
+                                phone: '',
+                                location: '',
+                            };
+                            await databaseService.createUserProfile(appwriteUser.$id, profileData);
+                        } catch (profileError) {
+                            console.log("Profile will be created later during role selection");
+                        }
+                    }
+
+                    // Set a flag to bypass onboarding redirect for users who selected role during signup
+                    if (data.role) {
+                        sessionStorage.setItem('just_signed_up', 'true');
+                        // Clear the flag after a short delay
+                        setTimeout(() => {
+                            sessionStorage.removeItem('just_signed_up');
+                        }, 5000);
+                    }
 
                     set((state) => {
                         state.user = newUser;
@@ -136,12 +165,13 @@ export const useUserStore = create<UserState>()(
                         state.isLoading = false;
                         state.error = null;
                     });
-                } catch (error) {
+                } catch (error: any) {
+                    console.error('Signup error:', error);
                     set((state) => {
                         state.user = null;
                         state.isAuthenticated = false;
                         state.isLoading = false;
-                        state.error = "Signup failed. Please try again.";
+                        state.error = error.message || "Signup failed. Please try again.";
                     });
                     throw error;
                 }

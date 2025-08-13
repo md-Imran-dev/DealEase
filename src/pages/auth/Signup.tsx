@@ -142,7 +142,7 @@ const Signup: React.FC = () => {
       if (!formData.role) {
         navigate("/auth/role-selection");
       } else {
-        navigate("/onboarding");
+        navigate("/");
       }
     } catch (error) {
       // Error is handled by context

@@ -48,13 +48,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/auth/role-selection" replace />;
   }
 
-  // Redirect to onboarding if user hasn't completed onboarding
+  // Only redirect to onboarding if user explicitly needs questionnaire completion
+  // Skip if user just signed up with a role (they can go straight to dashboard)
   if (
     requireOnboarding &&
     isAuthenticated &&
     user &&
     user.role &&
-    !user.isOnboarded
+    !user.isOnboarded &&
+    location.pathname !== "/onboarding" &&
+    // Don't redirect if user just signed up with a role
+    !sessionStorage.getItem("just_signed_up")
   ) {
     return <Navigate to="/onboarding" replace />;
   }
