@@ -25,6 +25,7 @@ import Messages from "./pages/Messages";
 import AcquisitionTracker from "./pages/AcquisitionTracker";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import SellerBusinesses from "./pages/SellerBusinesses";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
@@ -124,6 +125,7 @@ function App() {
               <Route path="matches" element={<Matches />} />
               <Route path="messages" element={<Messages />} />
               <Route path="tracker" element={<AcquisitionTracker />} />
+              <Route path="businesses" element={<SellerBusinesses />} />
               <Route
                 path="profile"
                 element={

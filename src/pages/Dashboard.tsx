@@ -26,9 +26,6 @@ const Dashboard: React.FC = () => {
 
   // Determine user role and customize experience
   const isBuyer = user?.role === "buyer";
-  const dashboardCopy = isBuyer
-    ? microcopy.dashboard.buyer
-    : microcopy.dashboard.seller;
 
   const statsCards = [
     {
@@ -55,10 +52,8 @@ const Dashboard: React.FC = () => {
       title: "New Opportunities",
       value: "8",
       change: "+3 this week",
-      icon: (
-        <Business sx={{ fontSize: 40, color: theme.palette.accent?.main }} />
-      ),
-      color: theme.palette.accent?.main,
+      icon: <Business sx={{ fontSize: 40, color: theme.palette.info.main }} />,
+      color: theme.palette.info.main,
     },
     {
       title: "Success Rate",
@@ -100,7 +95,7 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+    <Box>
       {/* Welcome Section */}
       <Box sx={{ mb: 4 }}>
         <Typography
@@ -153,14 +148,16 @@ const Dashboard: React.FC = () => {
 
       {/* Stats Cards */}
       <Box
-        display="grid"
-        gridTemplateColumns={{
-          xs: "1fr",
-          sm: "repeat(2, 1fr)",
-          md: "repeat(4, 1fr)",
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "repeat(2, 1fr)",
+            lg: "repeat(4, 1fr)",
+          },
+          gap: 3,
+          mb: 4,
         }}
-        gap={3}
-        sx={{ mb: 4 }}
       >
         {statsCards.map((stat, index) => (
           <Box key={index}>
@@ -208,9 +205,11 @@ const Dashboard: React.FC = () => {
       </Box>
 
       <Box
-        display="grid"
-        gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
-        gap={3}
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
+          gap: 3,
+        }}
       >
         {/* Recent Activity */}
         <Box>
@@ -218,19 +217,19 @@ const Dashboard: React.FC = () => {
             sx={{
               p: 3,
               borderRadius: 2,
-              height: "400px",
+              height: { xs: "auto", lg: "400px" },
+              minHeight: "300px",
             }}
           >
             <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
               Recent Activity
             </Typography>
-            <Box sx={{ space: 2 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {recentActivity.map((activity, index) => (
                 <Box
                   key={index}
                   sx={{
                     p: 2,
-                    mb: 2,
                     borderRadius: 1,
                     backgroundColor: theme.palette.grey[50],
                     borderLeft: `4px solid ${theme.palette.primary.main}`,
@@ -257,20 +256,21 @@ const Dashboard: React.FC = () => {
             sx={{
               p: 3,
               borderRadius: 2,
-              height: "400px",
+              height: { xs: "auto", lg: "400px" },
+              minHeight: "300px",
             }}
           >
             <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
               Deal Pipeline Progress
             </Typography>
-            <Box sx={{ space: 3 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               {[
                 { stage: "Initial Contact", progress: 85, deals: 5 },
                 { stage: "Due Diligence", progress: 60, deals: 3 },
                 { stage: "Negotiation", progress: 40, deals: 2 },
                 { stage: "Final Review", progress: 75, deals: 2 },
               ].map((stage, index) => (
-                <Box key={index} sx={{ mb: 3 }}>
+                <Box key={index}>
                   <Box
                     sx={{
                       display: "flex",

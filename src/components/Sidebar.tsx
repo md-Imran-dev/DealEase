@@ -18,8 +18,10 @@ import {
   Analytics as TrackerIcon,
   Person as ProfileIcon,
   Settings as SettingsIcon,
+  Business as BusinessIcon,
 } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useUserStore } from "../store/userStore";
 
 const drawerWidth = 260;
 
@@ -27,14 +29,27 @@ interface NavigationItem {
   text: string;
   icon: React.ReactElement;
   path: string;
+  roles?: string[]; // Optional roles filter
 }
 
-const navigationItems: NavigationItem[] = [
+const baseNavigationItems: NavigationItem[] = [
   { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
   { text: "Marketplace", icon: <MarketplaceIcon />, path: "/marketplace" },
   { text: "Matches", icon: <MatchesIcon />, path: "/matches" },
   { text: "Messages", icon: <MessagesIcon />, path: "/messages" },
   { text: "Acquisition Tracker", icon: <TrackerIcon />, path: "/tracker" },
+];
+
+const sellerOnlyItems: NavigationItem[] = [
+  {
+    text: "My Businesses",
+    icon: <BusinessIcon />,
+    path: "/businesses",
+    roles: ["seller"],
+  },
+];
+
+const commonItems: NavigationItem[] = [
   { text: "Profile", icon: <ProfileIcon />, path: "/profile" },
   { text: "Settings", icon: <SettingsIcon />, path: "/settings" },
 ];
@@ -49,6 +64,22 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onMobileClose }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useUserStore();
+
+  // Build navigation items based on user role
+  const navigationItems = React.useMemo(() => {
+    const items = [...baseNavigationItems];
+
+    // Add seller-specific items
+    if (user?.role === "seller") {
+      items.splice(-1, 0, ...sellerOnlyItems); // Insert before the last item (tracker)
+    }
+
+    // Add common items at the end
+    items.push(...commonItems);
+
+    return items;
+  }, [user?.role]);
 
   const handleNavigation = (path: string) => {
     navigate(path);
