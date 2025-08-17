@@ -1,13 +1,17 @@
 export interface Deal {
     $id: string;
-    dealId: string;
+    dealId?: string;
     buyerId: string;
     sellerId: string;
     businessId: string;
-    status: 'inquiry' | 'negotiation' | 'due_diligence' | 'closing' | 'completed' | 'cancelled';
-    currentStage: string;
+    businessTitle?: string;
+    status?: 'pending' | 'accepted' | 'rejected' | 'inquiry' | 'negotiation' | 'due_diligence' | 'closing' | 'completed' | 'cancelled';
+    currentStage?: string;
+    offerAmount?: number;
+    askingPrice?: number;
     offeredPrice?: number;
     counterPrice?: number;
+    offerType?: 'purchase' | 'investment' | 'partnership';
     terms?: string;
     documents?: string[];
     notes?: string;
@@ -20,7 +24,11 @@ export interface Deal {
 export interface CreateDealData {
     businessId: string;
     sellerId: string;
+    businessTitle?: string;
+    offerAmount?: number;
+    askingPrice?: number;
     offeredPrice?: number;
+    offerType?: 'purchase' | 'investment' | 'partnership';
     terms?: string;
     notes?: string;
     targetCloseDate?: string;

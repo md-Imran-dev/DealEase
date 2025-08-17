@@ -15,6 +15,7 @@ import {
   Storefront as MarketplaceIcon,
   Favorite as MatchesIcon,
   Chat as MessagesIcon,
+  HandshakeRounded as DealsIcon,
   Analytics as TrackerIcon,
   Person as ProfileIcon,
   Settings as SettingsIcon,
@@ -37,6 +38,7 @@ const baseNavigationItems: NavigationItem[] = [
   { text: "Marketplace", icon: <MarketplaceIcon />, path: "/marketplace" },
   { text: "Matches", icon: <MatchesIcon />, path: "/matches" },
   { text: "Messages", icon: <MessagesIcon />, path: "/messages" },
+  { text: "Deals", icon: <DealsIcon />, path: "/deals" },
   { text: "Acquisition Tracker", icon: <TrackerIcon />, path: "/tracker" },
 ];
 

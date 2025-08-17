@@ -41,10 +41,9 @@ import {
 } from "@mui/icons-material";
 import { useUserStore } from "../store/userStore";
 import { useUIStore } from "../store/uiStore";
-import { businessService, storageService, dealService } from "../lib/Appwrite";
+import { businessService, storageService } from "../lib/Appwrite";
 
 import type { Business } from "../types/business";
-import type { Conversation } from "../types/chat";
 
 const Marketplace: React.FC = () => {
   const theme = useTheme();
@@ -141,97 +140,12 @@ const Marketplace: React.FC = () => {
     });
   };
 
-  const handleMakeOffer = async (business: Business) => {
-    if (!user) {
-      showToast({
-        type: "error",
-        title: "Login Required",
-        message: "Please log in to make offers.",
-      });
-      return;
-    }
-
-    try {
-      console.log("💰 Making offer for business:", business.title);
-      console.log("👤 Buyer ID:", user.id);
-      console.log("👨‍💼 Seller ID:", business.sellerId);
-
-      // Calculate offer amount (10% below asking price as example)
-      const offerAmount = business.askingPrice * 0.9;
-
-      console.log("💾 Storing deal in database...");
-
-      // Create actual deal record in Appwrite
-      const dealData = {
-        sellerId: business.sellerId,
-        businessId: business.$id,
-        offerAmount: offerAmount,
-        askingPrice: business.askingPrice,
-        offerType: "purchase",
-        notes: `Offer for ${business.title} - ${formatCurrency(offerAmount)}`,
-      };
-
-      const deal = await dealService.createDeal(user.id, dealData);
-      console.log("✅ Deal created:", deal);
-
-      showToast({
-        type: "success",
-        title: "Offer Submitted!",
-        message: `Your offer of ${formatCurrency(offerAmount)} for "${
-          business.title
-        }" has been sent to the seller. They can view it in their Deals section.`,
-      });
-
-      console.log("✅ Offer submitted successfully with ID:", deal.$id);
-    } catch (error: any) {
-      console.error("❌ Error making offer:", error);
-      showToast({
-        type: "error",
-        title: "Failed to Submit Offer",
-        message: "There was an error submitting your offer. Please try again.",
-      });
-    }
-  };
-
-  const handleContactSeller = async (business: Business) => {
-    if (!user) {
-      showToast({
-        type: "error",
-        title: "Login Required",
-        message: "Please log in to contact sellers.",
-      });
-      return;
-    }
-
-    try {
-      console.log("📞 Contacting seller for business:", business.title);
-      console.log("👤 Buyer ID:", user.id);
-      console.log("👨‍💼 Seller ID:", business.sellerId);
-      console.log("🏢 Business ID:", business.$id);
-
-      // For now, let's create a simpler notification system
-      // Instead of using complex chat, we'll create a basic contact record
-
-      showToast({
-        type: "success",
-        title: "Interest Sent!",
-        message: `Your interest in "${business.title}" has been sent to the seller. They will contact you soon!`,
-      });
-
-      // TODO: Implement proper messaging system after fixing collection schemas
-      console.log("✅ Contact seller request completed");
-
-      // Optional: Navigate to messages page
-      // window.location.href = '/messages';
-    } catch (error: any) {
-      console.error("❌ Error contacting seller:", error);
-      showToast({
-        type: "error",
-        title: "Failed to Contact Seller",
-        message:
-          "There was an error starting the conversation. Please try again.",
-      });
-    }
+  const handleContactSeller = (business: Business) => {
+    showToast({
+      type: "success",
+      title: "Interest Sent!",
+      message: `Your interest in "${business.title}" has been sent to the seller.`,
+    });
   };
 
   const handleViewDetails = (business: Business) => {
@@ -680,46 +594,25 @@ const Marketplace: React.FC = () => {
                     </Box>
                   )}
 
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: 1,
-                      mt: "auto",
-                      flexDirection: "column",
-                    }}
-                  >
+                  <Box sx={{ display: "flex", gap: 1, mt: "auto" }}>
                     <Button
                       variant="outlined"
                       size="small"
                       startIcon={<ViewIcon />}
                       onClick={() => handleViewDetails(business)}
-                      fullWidth
+                      sx={{ flex: 1 }}
                     >
                       View Details
                     </Button>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<ContactIcon />}
-                        onClick={() => handleContactSeller(business)}
-                        sx={{ flex: 1 }}
-                      >
-                        Contact Seller
-                      </Button>
-                      {business.askingPrice > 0 && (
-                        <Button
-                          variant="contained"
-                          size="small"
-                          color="success"
-                          startIcon={<MoneyIcon />}
-                          onClick={() => handleMakeOffer(business)}
-                          sx={{ flex: 1 }}
-                        >
-                          Make Offer
-                        </Button>
-                      )}
-                    </Box>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      startIcon={<ContactIcon />}
+                      onClick={() => handleContactSeller(business)}
+                      sx={{ flex: 1 }}
+                    >
+                      Contact Seller
+                    </Button>
                   </Box>
                 </CardContent>
               </Card>
@@ -848,35 +741,15 @@ const Marketplace: React.FC = () => {
                 )}
 
                 <Grid item xs={12}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: 2,
-                      mt: 2,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Box sx={{ display: "flex", gap: 2 }}>
-                      <Button
-                        variant="contained"
-                        startIcon={<ContactIcon />}
-                        onClick={() => handleContactSeller(selectedBusiness)}
-                        sx={{ flex: 1 }}
-                      >
-                        Contact Seller
-                      </Button>
-                      {selectedBusiness.askingPrice > 0 && (
-                        <Button
-                          variant="contained"
-                          color="success"
-                          startIcon={<MoneyIcon />}
-                          onClick={() => handleMakeOffer(selectedBusiness)}
-                          sx={{ flex: 1 }}
-                        >
-                          Make Offer
-                        </Button>
-                      )}
-                    </Box>
+                  <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+                    <Button
+                      variant="contained"
+                      startIcon={<ContactIcon />}
+                      onClick={() => handleContactSeller(selectedBusiness)}
+                      sx={{ flex: 1 }}
+                    >
+                      Contact Seller
+                    </Button>
                     <Button
                       variant="outlined"
                       startIcon={
@@ -912,3 +785,4 @@ const Marketplace: React.FC = () => {
 };
 
 export default Marketplace;
+

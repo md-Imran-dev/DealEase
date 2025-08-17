@@ -521,6 +521,27 @@ export class BusinessService {
         }
     }
 
+    // Get all active businesses (for marketplace)
+    async getAllBusinesses(): Promise<Business[]> {
+        try {
+            console.log('🌍 Getting all active businesses for marketplace...');
+            const businesses = await databases.listDocuments(
+                appwriteConfig.databaseId,
+                appwriteConfig.collections.businesses,
+                [
+                    Query.equal('isActive', true),
+                    Query.orderDesc('$createdAt'),
+                    Query.limit(100) // Limit for performance
+                ]
+            );
+            console.log('🏪 Found active businesses:', businesses.documents.length);
+            return businesses.documents as Business[];
+        } catch (error) {
+            console.error('❌ Error getting all businesses:', error);
+            throw error;
+        }
+    }
+
     // Update business
     async updateBusiness(businessId: string, updates: Partial<CreateBusinessData>): Promise<Business> {
         try {
@@ -613,9 +634,8 @@ export class ChatService {
                 return existing.documents[0] as Conversation;
             }
 
-            // Create new conversation
+            // Create new conversation (remove conversationId since it's not in collection)
             const conversationData = {
-                conversationId: ID.unique(),
                 buyerId,
                 sellerId,
                 businessId,
@@ -767,13 +787,24 @@ export class DealService {
     // Create deal
     async createDeal(buyerId: string, data: CreateDealData): Promise<Deal> {
         try {
+            console.log('📝 Creating deal with data:', { buyerId, ...data });
+
+            // Only include fields that exist in the Appwrite collection
             const dealData = {
                 dealId: ID.unique(),
                 buyerId,
-                ...data,
-                status: 'inquiry',
+                sellerId: data.sellerId,
+                businessId: data.businessId,
+                status: 'inquiry', // Use the original status
                 currentStage: 'Initial Contact',
+                // Use offeredPrice instead of offerAmount (based on original schema)
+                ...(data.offerAmount && { offeredPrice: data.offerAmount }),
+                ...(data.offeredPrice && { offeredPrice: data.offeredPrice }),
+                ...(data.notes && { notes: data.notes }),
+                ...(data.terms && { terms: data.terms }),
             };
+
+            console.log('💾 Final deal data to save:', dealData);
 
             const deal = await databases.createDocument(
                 appwriteConfig.databaseId,
@@ -782,9 +813,11 @@ export class DealService {
                 dealData
             );
 
+            console.log('✅ Deal created successfully:', deal);
             return deal as Deal;
         } catch (error) {
-            console.error('Error creating deal:', error);
+            console.error('❌ Error creating deal:', error);
+            console.error('Deal data that failed:', { buyerId, ...data });
             throw error;
         }
     }
@@ -807,6 +840,50 @@ export class DealService {
             return response.documents as Deal[];
         } catch (error) {
             console.error('Error fetching deals:', error);
+            throw error;
+        }
+    }
+
+    // Get deals for seller (only deals on their businesses)
+    async getSellerDeals(sellerId: string): Promise<Deal[]> {
+        try {
+            console.log('🔍 Getting deals for seller:', sellerId);
+            const response = await databases.listDocuments(
+                appwriteConfig.databaseId,
+                appwriteConfig.collections.deals,
+                [
+                    Query.equal('sellerId', sellerId),
+                    Query.orderDesc('$createdAt')
+                ]
+            );
+
+            console.log('📋 Found seller deals:', response.documents.length);
+            console.log('📋 Seller deals data:', response.documents);
+            return response.documents as Deal[];
+        } catch (error) {
+            console.error('Error fetching seller deals:', error);
+            throw error;
+        }
+    }
+
+    // Get deals for buyer (only deals they made)
+    async getBuyerDeals(buyerId: string): Promise<Deal[]> {
+        try {
+            console.log('🔍 Getting deals for buyer:', buyerId);
+            const response = await databases.listDocuments(
+                appwriteConfig.databaseId,
+                appwriteConfig.collections.deals,
+                [
+                    Query.equal('buyerId', buyerId),
+                    Query.orderDesc('$createdAt')
+                ]
+            );
+
+            console.log('📋 Found buyer deals:', response.documents.length);
+            console.log('📋 Buyer deals data:', response.documents);
+            return response.documents as Deal[];
+        } catch (error) {
+            console.error('Error fetching buyer deals:', error);
             throw error;
         }
     }
